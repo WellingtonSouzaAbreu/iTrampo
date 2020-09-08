@@ -1,0 +1,32 @@
+.nav {
+    background-color: white;
+    /*  linear-gradient(to left, #299cdf, #40B9FF); */
+}
+
+.nav-items {
+    display: flex;
+    justify-content: space-around;
+}
+
+.nav-item {
+    padding: 10px 0px;
+}
+
+.nav-item a {
+    text-decoration: none;
+    padding: 10px 50px;
+    color: black;
+    font-weight: bold;
+}
+
+.nav-item a:hover {
+    background: linear-gradient(to right, #299cdf, #40B9FF);
+    color: white;
+    text-shadow: 0px 1px 1px black;
+}
+
+.selected a {
+    background: linear-gradient(to right, #299cdf, #40B9FF);
+    color: white;
+    text-shadow: 0px 1px 1px black;
+}

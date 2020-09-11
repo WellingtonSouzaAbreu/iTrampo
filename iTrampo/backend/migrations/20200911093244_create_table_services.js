@@ -3,19 +3,16 @@
 exports.up = function (knex) {
     return knex.schema.createTable('services', table => {
         table.increments('id').primary()
-        table.string('tituloServico')/* .notNull() */
-        table.binary('descricao')/* .notNull() */
-        table.string('objetivo')/* .notNull() */
-        table.float('valor')/* .notNull() */
-        table.integer('prazoDias')/* .notNull() */ // Prazo em dias
-        table.boolean('status')/* .notNull() */.defaultTo(true)
-        table.integer('qtdVagas')/* .notNull() */
-        table.timestamp('dataPostagem')/* .notNull() */
-
-        /* table.integer('usuarioId').references('id')
-            .inTable('users').notNull()
-        table.integer('enderecoId').references('id')
-            .inTable('enderecos').notNull() */
+        table.string('titulo_servico').notNull()
+        table.binary('descricao').notNull()
+        table.string('objetivo').notNull()
+        table.float('valor').notNull()
+        table.integer('prazo_dias').notNull()
+        table.boolean('status').defaultTo(true)
+        table.integer('qtd_vagas').notNull()
+        table.timestamp('data_postagem')
+        table.integer('usuario_id').notNull()
+        table.integer('endereco_id').notNull()
     })
 };
 

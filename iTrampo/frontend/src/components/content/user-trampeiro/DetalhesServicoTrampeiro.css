@@ -1,5 +1,4 @@
 .detalhes-servico-trampeiro {
-    /* background-color: red; */
     padding: 0px 10px;
 }
 
@@ -90,9 +89,6 @@ h2 {
     grid-area: interessados-value;
 }
 
-
-
-
 .item-info{
     grid-area: item-info;
 }
@@ -104,22 +100,4 @@ h2 {
 .detalhes-footer {
     display: flex;
     justify-content: flex-end;
-}
-
-.bt-manifestar-interesse {
-    padding: 10px;
-    margin-top: 10px;
-    background: linear-gradient(to right, #299cdf, #40B9FF);
-    color: #FFF;
-    border-radius: 10px;
-    font-size: 0.8em;
-    font-weight: bold;
-    border-color: rgb(153, 153, 153);
-    text-shadow: 0px 1px 1px black;
-    cursor: pointer;
-}
-
-.bt-manifestar-interesse:hover {
-    background: linear-gradient(to right, #40B9FF, #299cdf);
-    border-color: black;
 }

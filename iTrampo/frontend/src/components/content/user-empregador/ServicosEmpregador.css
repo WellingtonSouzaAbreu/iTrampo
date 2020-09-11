@@ -1,0 +1,12 @@
+.header-servicos-empregador {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 25px;
+}
+
+h1{
+    margin-bottom: 0;
+}
+
+
+

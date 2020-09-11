@@ -12,10 +12,10 @@
     text-decoration: none;
     color: black;
     font-weight: bold;
-
 }
 
 .item:hover {
+    text-decoration: none;
     color: white;
     text-shadow: 0px 1px 1px black;
 }

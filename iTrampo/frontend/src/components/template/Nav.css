@@ -1,6 +1,5 @@
-.nav {
+nav {
     background-color: white;
-    /*  linear-gradient(to left, #299cdf, #40B9FF); */
 }
 
 .nav-items {
@@ -22,6 +21,7 @@
 .nav-item a:hover {
     background: linear-gradient(to right, #299cdf, #40B9FF);
     color: white;
+    text-decoration: none;
     text-shadow: 0px 1px 1px black;
 }
 

@@ -20,10 +20,10 @@ export default class Nav extends Component {
         state[navItem] = true
         this.setState({...state})
     }
-
+    
     render() {
         return (
-            <div className="nav">
+            <nav>
                 <div className="nav-items">
                     <div className={`nav-item ${this.state.selectedFeed ? 'selected' : ''}`}>
                         <a href="#" onClick={e => this.selectNavItem('selectedFeed')}>Feed</a>
@@ -38,7 +38,7 @@ export default class Nav extends Component {
                         <a href="#" onClick={e => this.selectNavItem('selectedProfile')}>Perfil</a>
                     </div>
                 </div>
-            </div>
+            </nav>
         )
     }
 }

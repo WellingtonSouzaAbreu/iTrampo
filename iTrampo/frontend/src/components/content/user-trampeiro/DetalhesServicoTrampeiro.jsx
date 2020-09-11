@@ -2,6 +2,8 @@ import React from 'react'
 
 import './DetalhesServicoTrampeiro.css'
 
+import BtnBlueWithRadius from './../buttons/BtnBlueWithRadius.jsx'
+
 function DetalhesServicoTrampeiro(props) {
     return (
         <div className="detalhes-servico-trampeiro">
@@ -38,9 +40,9 @@ function DetalhesServicoTrampeiro(props) {
             </div>
             <hr />
             <div className="detalhes-footer">
-                <button className="bt-manifestar-interesse">Manifestar interesse</button>
+                <BtnBlueWithRadius label='Manifestar interesse'/>
             </div>
-        </div>
+            </div>
     )
 }
 

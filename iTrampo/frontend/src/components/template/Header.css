@@ -2,10 +2,10 @@
     height: 17vh;
     background: linear-gradient(to right, #299cdf, #40B9FF);
     box-shadow: 3px 3px 1px black;
-
     display: flex;
     justify-content: space-between;
 }
+
 
 .logo {
     display: flex;
@@ -14,26 +14,13 @@
     font-size: 1.3em;
 }
 
-.logo img{
+/* .logo img{
 
-}
+} */
 
 .cadastro {
     margin-right: 40px;
     margin-bottom: 10px;
     display: flex;
     align-items: flex-end;
-}
-
-.bt-cadastro{
-    padding: 10px 20px;
-    background-color: #535351;
-    border-radius: 20px;
-    color: white;
-    font-size: 0.9em;
-    cursor: pointer;
-}
-
-.bt-cadastro:hover{
-    border-color: #FFF;
 }

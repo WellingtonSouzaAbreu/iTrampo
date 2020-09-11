@@ -7,8 +7,8 @@ import ServicosEmpregador from './../content/user-empregador/ServicosEmpregador.
 export default function Content(props) {
     return (
         <div className="content">
-            {/* <DetalhesServicoTrampeiro/> Substituir esse componente por outro */}
-            <ServicosEmpregador/>
+            <DetalhesServicoTrampeiro/>{/*  Substituir esse componente por outro */}
+            {/* <ServicosEmpregador/> */}
         </div>
     )
 }

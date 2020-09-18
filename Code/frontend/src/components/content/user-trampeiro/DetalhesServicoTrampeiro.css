@@ -1,0 +1,108 @@
+.detalhes-servico-trampeiro {
+    padding: 0px 10px;
+}
+
+.detalhes-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.status-servico {
+    padding: 7px 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    text-shadow: 0px 1px 1px black;
+}
+
+.aberto {
+    background-color: #50DF1D;
+}
+
+.fechado {
+    background-color: #ec1c1c;
+}
+
+h2 {
+    margin: 0px;
+}
+
+.info-servico {
+    margin-bottom: 20px;
+    display: grid;
+    grid-template-rows: repeat(6, 23px);
+    grid-template-columns: 180px 1fr;
+    grid-template-areas: "data-postagem data-postagem-value" "local local-value" "valor valor-value" "prazo prazo-value" "vagas vagas-value" "interessados interessados-value" "competencias competencias-value" "empregador empregador-value";
+}
+
+.info-label {
+    font-weight: bold;
+}
+
+.data-postagem {
+    grid-area: data-postagem;
+}
+
+.data-postagem-value {
+    grid-area: data-postagem-value;
+}
+
+.local {
+    grid-area: local;
+}
+
+.local-value {
+    grid-area: local-value;
+}
+
+.valor {
+    grid-area: valor;
+}
+
+.valor-value {
+    grid-area: valor-value;
+}
+
+.prazo {
+    grid-area: prazo;
+}
+
+.prazo-value {
+    grid-area: prazo-value;
+}
+
+.vagas {
+    grid-area: vagas;
+}
+
+.vagas-value {
+    grid-area: vagas-value;
+}
+
+.interessados {
+    grid-area: interessados;
+}
+
+.interessados-value {
+    grid-area: interessados-value;
+}
+
+.item-info {
+    grid-area: item-info;
+}
+
+.conteudo-descricao p {
+    word-wrap: break-word;
+}
+
+.detalhes-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.already-interested {
+    color: rgb(88, 88, 88);
+    text-shadow: 1px 1px 1px rgb(88, 88, 88);
+}

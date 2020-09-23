@@ -76,7 +76,7 @@ class Feed extends Component {
 
     renderRows() {
         return (
-            this.state.servicesSummarized.map((service, i) => {
+            this.state.servicesSummarized.map((service) => {
                 return (
                     <tr key={service.id} onClick={_ => this.openService(service.id)}>
                         <td>{service.postDate}</td>

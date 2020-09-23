@@ -1,18 +1,46 @@
-import React,{Component} from 'react'
+import React, { Component } from 'react'
+import BtnGrayWithRadius from './buttons/BtnGrayWithRadius'
+
+import './Login.css'
 
 const initialState = {
-    
+
 }
 
-class Login extends Component{ 
-    constructor(props){
+class Login extends Component {
+    constructor(props) {
         super(props)
-        this.state = {...initialState}
+        this.state = { ...initialState }
     }
-    render(){
-        return(
-            <div className=''>
-                Login
+    render() {
+        return (
+            <div className='login'>
+                <div className="description">
+                    <h4>Why do we use it?</h4>
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
+
+                        <h4>Why do we use it?</h4>
+                    <p>
+                        It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout. The point of using Lorem Ipsum is that it has a more-or-less normal distribution of letters, as opposed to using 'Content here, content here', making it look like readable English. Many desktop publishing packages and web page editors now use Lorem Ipsum as their default model text, and a search for 'lorem ipsum' will uncover many web sites still in their infancy. Various versions have evolved over the years, sometimes by accident, sometimes on purpose (injected humour and the like).
+                        Where does it come from?
+                        </p>
+                </div>
+                <div className="caixa-login">
+                    <form>
+                        <div class="form-group">
+                            <label for="email">Endereço de email</label>
+                            <input type="email" class="form-control" id="email" placeholder="Seu email" />
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Senha</label>
+                            <input type="password" class="form-control" id="password" placeholder="Senha" />
+                            <a href=""><small id="password-recovery" class="form-text">Esqueceu a senha?</small></a>
+                        </div>
+                        <div className="area-botao">
+                            <BtnGrayWithRadius label="Entrar" />
+                        </div>
+                    </form>
+                </div>
             </div>
         )
     }

@@ -6,7 +6,6 @@
     justify-content: space-between;
 }
 
-
 .logo {
     display: flex;
     align-items: center;
@@ -18,7 +17,7 @@
 
 } */
 
-.cadastro {
+.bt-cadastro {
     margin-right: 40px;
     margin-bottom: 10px;
     display: flex;

@@ -20,7 +20,7 @@ export default props =>
         <Route exact path="/login" component={Login} />
         <Route exact path="/cadastro" component={Cadastro} />
         <Route exact path="/feed" component={Feed} />
-        <Route exact path="/promotional-packages" component={promotionalPackages} />
+        <Route exact path="/pacotes-promocionais" component={promotionalPackages} />
         <Route exact path="/servicos-trampeiro" component={ServicosTrampeiro} />
         <Route exact path="/como-funciona" component={ComoFunciona} />
         <Route exact path="/perfil-proprio" component={PerfilProprio} />
@@ -28,7 +28,7 @@ export default props =>
         <Route exact path="/detalhes-servico-trampeiro/:id" component={DetalhesServicoTrampeiro} />
         <Route exact path="/servicos-empregador" component={ServicosEmpregador} />
         <Route exact path="/detalhes-servico-empregador" component={DetalhesServicoEmpregador} />
-        <Route exact path="/perfil-visualizar" component={PerfilVisualizar} />
+        <Route exact path="/perfil-visualizar/:id" component={PerfilVisualizar} />
         
 
         <Redirect from="*" to="/signup" />

@@ -1,0 +1,12 @@
+.cadastro {
+    display: flex;
+    justify-content: space-between;
+}
+
+.fomulario {
+    border-right: 1px solid black;
+}
+
+.terms-and-conditions {
+    margin-left: 107px;
+}

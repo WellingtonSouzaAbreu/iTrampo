@@ -12,7 +12,7 @@ export default function Header(props){
             <div className="logo">
                 <h1>Logo</h1>
             </div>
-            <div className="cadastro">
+            <div className="bt-cadastro">
                 <BtnGrayWithRadius label="Cadastre-se"/>
             </div>
         </header>    

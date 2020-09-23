@@ -32,15 +32,8 @@ module.exports = app => {
         }
     }
 
-    const get = (req, res) => {
+    const get = (req, res) => { // Pega todos interessados
         app.db('interested_service')
-            .then(interested => res.json(interested))
-            .catch(err => res.status(500).send(err))
-    }
-
-    const getById = async (req, res) => {
-        app.db('interested_service')
-            .where({ id: req.params.id })
             .then(interested => res.json(interested))
             .catch(err => res.status(500).send(err))
     }
@@ -73,5 +66,5 @@ module.exports = app => {
 
     }
 
-    return { save, get, getById, getAlreadyInterested, remove }
+    return { save, get, getAlreadyInterested, remove }
 }

@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import {Link} from 'react-router-dom'
 
 import './DetalhesServicoTrampeiro.css'
 
@@ -97,7 +98,9 @@ class DetalhesServicoTrampeiro extends Component {
                         <div className="competencias info-label">Competências:</div>
                         <div className="competencias-value">{this.state.service.specialities.toString()}</div>
                         <div className="empregador info-label">Empregador:</div>
-                        <div className="empregador-value">{this.state.service.user.name}</div>
+                        <div className="empregador-value">
+                            <Link to={`/perfil-visualizar/${this.state.service.user.id}`}>{this.state.service.user.name}</Link>
+                        </div>
                     </div>
                     <hr />
                     <div className="descricao-servico">

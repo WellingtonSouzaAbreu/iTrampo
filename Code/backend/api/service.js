@@ -43,9 +43,6 @@ module.exports = app => {
 
     const limit = 2 // Usado para paginação
     const getSummarized = async (req, res) => {
-        let { count } = await app.db('services').count('id').first() //Consulta para saber quantas páginas deverão ser geradas
-        count = parseInt(count)
-
         const currentPage = req.query.page || 1
         const value = req.query.value ? req.query.value.split(',') : [0, 99999]
         const speciality = req.query.speciality || ''
@@ -53,6 +50,29 @@ module.exports = app => {
         /* console.log('value: ' + value)
         console.log('speciality: ' + speciality)
         console.log('city: ' + city) */
+
+        /* let { count } = await app.db('services')
+            .count('id')
+            .first() //Consulta para saber quantas páginas deverão ser geradas */
+
+        let count = await app.db('services')
+            .innerJoin('skills', 'skills.serviceId', 'services.id')
+            .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
+            .innerJoin('address', 'services.addressId', 'address.idAddress')
+            .innerJoin('cities', 'address.cityId', 'cities.id')
+            .whereBetween('services.value', value)
+            .where('specialities.speciality', 'like', `%${speciality}%`)
+            .where('cities.name', 'like', `%${city}%`)
+            .groupBy('services.id')
+            .count('services.id')
+            .then(numberOfServices => {
+                // console.log('numberOfServices: ' + numberOfServices.length)
+                return (numberOfServices.length)
+            })
+
+        console.log(count)
+        count = parseInt(count)
+        count = count ? count : 1
 
         await app.db('services')
             .select('services.id', 'services.postDate', 'services.serviceTitle', 'services.value', 'services.addressId')
@@ -66,6 +86,7 @@ module.exports = app => {
             .where('cities.name', 'like', `%${city}%`)
             .groupBy('services.id')
             .then(async services => {
+                // console.log(services)
                 let servicesWithSpecialities = await getSpecialities(services)
                 let servicesWithAddress = await getAddress(servicesWithSpecialities)
                 res.send({ data: servicesWithAddress, count, limit })
@@ -112,8 +133,7 @@ module.exports = app => {
                 let serviceWithAddress = await getAddress(serviceWithSpecialities)
                 let serviceWithInterested = await getInterested(serviceWithAddress)
                 let serviceWithUser = await getUser(serviceWithInterested)
-                // console.log(serviceWithUser)
-                
+
                 let [serviceComplete] = serviceWithUser
                 serviceComplete.description = serviceComplete.description.toString()
 
@@ -123,10 +143,9 @@ module.exports = app => {
     }
 
     const getInterested = async (service) => {
-        // console.log(service)
         await app.db('interested_service')
             .where({ serviceId: service[0].id })
-            .count()
+            .count('id')
             .then(interested => service[0].numberOfStakeholders = interested[0].count)
         return service
     }
@@ -138,6 +157,42 @@ module.exports = app => {
             .first()
             .then(user => service[0].user = user)
         return service
+    }
+
+    const getServicesByUser = async (req, res) => {
+        console.log('userId: ' + req.query.userId)
+        console.log('page: ' + req.query.page)
+
+        const currentPage = req.query.page || 1
+        let userId = req.query.userId || 0
+
+        let { count } = await app.db('services')
+            .count('services.id')
+            .innerJoin('interested_service', 'services.id', 'interested_service.serviceId')
+            .where({ 'interested_service.userId': userId })
+            .first()
+        count = parseInt(count)
+
+        await app.db('services')
+            .select('services.id', 'services.postDate', 'services.serviceTitle', 'services.value', 'services.addressId')
+            .limit(limit).offset(currentPage * limit - limit)
+            .innerJoin('skills', 'skills.serviceId', 'services.id')
+            .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
+            .innerJoin('address', 'services.addressId', 'address.idAddress')
+            .innerJoin('cities', 'address.cityId', 'cities.id')
+            .innerJoin('interested_service', 'services.id', 'interested_service.serviceId')
+            .where({ 'interested_service.userId': userId })
+            .groupBy('services.id')
+            .then(async services => {
+                let servicesWithSpecialities = await getSpecialities(services)
+                let servicesWithAddress = await getAddress(servicesWithSpecialities)
+                res.send({ data: servicesWithAddress, count, limit })
+            })
+            .catch(err => res.send(err))
+    }
+
+    const getServicesByService = (req, res) => {
+
     }
 
     /* const remove = async (req, res) => { // Ao deletar deve-se deletar tudo que está associado
@@ -157,9 +212,5 @@ module.exports = app => {
         }
     } */
 
-    const getWithSearchFilters = async (req, res) => {
-        
-    }
-
-    return { save, getSummarized, getById }
+    return { save, getSummarized, getById, getServicesByUser }
 }

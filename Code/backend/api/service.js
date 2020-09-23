@@ -58,7 +58,7 @@ module.exports = app => {
         let count = await app.db('services')
             .innerJoin('skills', 'skills.serviceId', 'services.id')
             .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
-            .innerJoin('address', 'services.addressId', 'address.idAddress')
+            .innerJoin('address', 'services.addressId', 'address.id')
             .innerJoin('cities', 'address.cityId', 'cities.id')
             .whereBetween('services.value', value)
             .where('specialities.speciality', 'like', `%${speciality}%`)
@@ -79,7 +79,7 @@ module.exports = app => {
             .limit(limit).offset(currentPage * limit - limit)
             .innerJoin('skills', 'skills.serviceId', 'services.id')
             .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
-            .innerJoin('address', 'services.addressId', 'address.idAddress')
+            .innerJoin('address', 'services.addressId', 'address.id')
             .innerJoin('cities', 'address.cityId', 'cities.id')
             .whereBetween('services.value', value)
             .where('specialities.speciality', 'like', `%${speciality}%`)
@@ -113,7 +113,7 @@ module.exports = app => {
                 .innerJoin('cities', 'cities.id', 'address.cityId')
                 .innerJoin('states', 'states.id', 'cities.stateId')
                 .innerJoin('country', 'country.id', 'states.countryId')
-                .where({ idAddress: service.addressId })
+                .where({ id: service.addressId })
                 .then(adresses => {
                     service.address = adresses[0]
                     delete service.addressId
@@ -178,7 +178,7 @@ module.exports = app => {
             .limit(limit).offset(currentPage * limit - limit)
             .innerJoin('skills', 'skills.serviceId', 'services.id')
             .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
-            .innerJoin('address', 'services.addressId', 'address.idAddress')
+            .innerJoin('address', 'services.addressId', 'address.id')
             .innerJoin('cities', 'address.cityId', 'cities.id')
             .innerJoin('interested_service', 'services.id', 'interested_service.serviceId')
             .where({ 'interested_service.userId': userId })

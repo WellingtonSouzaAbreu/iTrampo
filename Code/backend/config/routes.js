@@ -4,9 +4,6 @@ module.exports = app => {
     app.route('/services/services-interested-by-user')
         .get(app.api.service.getServicesByUser)
 
-    /* app.route('/services/users-interested-by-service')
-        .get(app.api.service.getServicesByService) */
-
     app.route('/services')
         .get(app.api.service.getSummarized) // Resumido
 
@@ -21,6 +18,9 @@ module.exports = app => {
 
     app.route('/interested-service')
         .post(app.api.interested.save)
+    
+    app.route('/users')
+        .post(app.api.user.save)
 
 
 

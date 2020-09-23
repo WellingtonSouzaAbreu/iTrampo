@@ -4,7 +4,7 @@ exports.up = function (knex) {
         table.increments('id').primary()
         table.integer('userId')/* .references('id')
         .inTable('users') */.notNull()
-        table.integer('specialitiesId')/* .references('id')
+        table.integer('specialityId')/* .references('id')
         .inTable('specialities') */.notNull()
     })
 };

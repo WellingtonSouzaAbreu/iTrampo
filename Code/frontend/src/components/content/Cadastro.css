@@ -7,6 +7,43 @@
     border-right: 1px solid black;
 }
 
+.formulario-footer{
+    display: flex;
+    justify-content: flex-end;
+}
+
 .terms-and-conditions {
-    margin-left: 107px;
+    margin-left: 140px;
+}
+
+.area-foto-perfil{
+    width: 100%;
+}
+
+.foto-perfil-body{
+    display: flex;
+    justify-content: center;
+}
+
+.foto-perfil {
+    border-radius: 12px;
+    border: 1px solid  #40B9FF;
+    padding: 2px;
+    width: 250px;
+    height: 250px;
+}
+
+.img-perfil {
+    border-radius: 12px;
+}
+
+.foto-perfil-footer{
+    display: flex;
+    justify-content: center;
+}
+
+.foto-perfil-footer div{
+    width: 250px;
+    display: flex;
+    justify-content: flex-end;
 }

@@ -2,7 +2,8 @@
 exports.up = function (knex) {
     return knex.schema.createTable('contacts', table => {
         table.increments('id').primary()
-        table.string('email').notNull()
+        table.string('number').notNull()
+        table.integer('userId').notNull()
     })
 };
 

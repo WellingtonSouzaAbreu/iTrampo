@@ -31,5 +31,5 @@ export default props =>
         <Route exact path="/perfil-visualizar/:id" component={PerfilVisualizar} />
         
 
-        <Redirect from="*" to="/signup" />
+        <Redirect from="*" to="/login" />
     </Switch>

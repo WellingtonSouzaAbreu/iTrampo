@@ -1,0 +1,52 @@
+.perfil-proprio{
+    display: flex;
+}
+
+.perfil-proprio .col-form-label{
+    font-weight: bold;
+}
+
+.formulario-footer-button{
+    margin-right: 20px;
+}
+
+.specialidade-selecionada{
+    cursor: pointer;
+    border: 1px solid rgb(192, 192, 192);
+    margin-right: 3px;
+    padding: 0px 4px;
+    border-radius: 7px;
+}
+
+.specialidade-selecionada:hover{
+    color: #ec1c1c;
+    border: 1px solid #ec1c1c;
+}
+
+.informacoes-adicionais{
+    margin: 30px;
+}
+
+.area-curriculo{
+    display:flex;
+    align-items: center;
+}
+
+.label-curriculum {
+    padding: 8px 25px;
+    margin-top: 10px;
+    background: linear-gradient(to right, #299cdf, #40B9FF);
+    color: #FFF;
+    border-radius: 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-color: rgb(153, 153, 153);
+    text-shadow: 0px 1px 1px black;
+    cursor: pointer;
+    border: 1px solid rgb(133, 133, 133);
+}
+
+.label-profile-image:hover {
+    background: linear-gradient(to right, #40B9FF, #299cdf);
+    border-color: black;
+}

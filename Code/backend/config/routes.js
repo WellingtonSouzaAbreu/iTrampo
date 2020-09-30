@@ -18,15 +18,26 @@ module.exports = app => {
 
     app.route('/interested-service')
         .post(app.api.interested.save)
-    
+
     app.route('/users')
         .post(app.api.user.save)
 
+    app.route('/users/:id')
+        .get(app.api.user.getById)
+        .put(app.api.user.save)
 
+    app.route('/profile-image/:idUser')
+        .post(app.api.profileImage.save)
+        .get(app.api.profileImage.getById)
 
+    app.route('/address/countries')
+        .get(app.api.address.getCountries)
 
+    app.route('/address/states/:countryId')
+        .get(app.api.address.getStates)
 
-
+    app.route('/address/cities/:stateId')
+        .get(app.api.address.getCities)
 
 
 

@@ -2,10 +2,8 @@
 exports.up = function (knex) {
     return knex.schema.createTable('user_specialities', table => {
         table.increments('id').primary()
-        table.integer('userId')/* .references('id')
-        .inTable('users') */.notNull()
-        table.integer('specialityId')/* .references('id')
-        .inTable('specialities') */.notNull()
+        table.integer('userId').notNull()
+        table.integer('specialityId').notNull()
     })
 };
 

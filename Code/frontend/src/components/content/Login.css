@@ -8,18 +8,17 @@
 }
 
 .caixa-login{
-    color: white;
+    color: black;
     width: 40%;
     height: 100%;
     padding: 40px;
     border-radius: 10px;
     background: linear-gradient(to right,  #7bcfff,#cbecff);
     /* background: linear-gradient(to right,  #40B9FF,#299cdf); */
-    text-shadow: 1px 0.5px 1px black;
 }
 
 #password-recovery{
-    color: white;
+    color: gray;
 }
 
 .area-botao{

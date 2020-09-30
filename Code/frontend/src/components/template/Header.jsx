@@ -5,16 +5,22 @@ import './Header.css'
 import BtnGrayWithRadius from './../content/buttons/BtnGrayWithRadius.jsx'
 
 
-export default function Header(props){
+export default function Header(props) {
 
-    return(
+    function register(serviceIid) {
+        let url = window.location.href.substring(0, 21)
+        url += `/cadastro`
+        window.location.href = url
+    }
+
+    return (
         <header className="header">
             <div className="logo">
                 <h1>Logo</h1>
             </div>
             <div className="bt-cadastro">
-                <BtnGrayWithRadius label="Cadastre-se"/>
+                <BtnGrayWithRadius click={register} label="Cadastre-se" />
             </div>
-        </header>    
+        </header>
     )
 }

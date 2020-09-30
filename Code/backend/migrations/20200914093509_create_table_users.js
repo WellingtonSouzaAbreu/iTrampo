@@ -10,9 +10,10 @@ exports.up = function (knex) {
         table.string('currentPackage').notNull()
         table.string('genre').notNull()
         table.date('dateOfBirth').notNull()
-        table.string('profileImage') // Diretório
+        table.string('profileImage')
         table.integer('servicesProvidedRequested').defaultTo(0)
         table.integer('remainingPackageDays').notNull()
+
         table.integer('addressId')
         table.integer('curriculumId')
         

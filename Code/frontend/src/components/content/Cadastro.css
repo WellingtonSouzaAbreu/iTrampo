@@ -12,8 +12,8 @@
     justify-content: flex-end;
 }
 
-.terms-and-conditions {
-    margin-left: 140px;
+.cadastro .col-form-label{
+    font-weight: bold;
 }
 
 .area-foto-perfil{
@@ -35,6 +35,10 @@
 
 .img-perfil {
     border-radius: 12px;
+    
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
 }
 
 .foto-perfil-footer{
@@ -46,4 +50,23 @@
     width: 250px;
     display: flex;
     justify-content: flex-end;
+}
+
+.label-profile-image {
+    padding: 8px 25px;
+    margin-top: 10px;
+    background: linear-gradient(to right, #299cdf, #40B9FF);
+    color: #FFF;
+    border-radius: 10px;
+    font-size: 0.8em;
+    font-weight: bold;
+    border-color: rgb(153, 153, 153);
+    text-shadow: 0px 1px 1px black;
+    cursor: pointer;
+    border: 1px solid rgb(133, 133, 133);
+}
+
+.label-profile-image:hover {
+    background: linear-gradient(to right, #40B9FF, #299cdf);
+    border-color: black;
 }

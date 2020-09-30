@@ -47,14 +47,7 @@ module.exports = app => {
         const value = req.query.value ? req.query.value.split(',') : [0, 99999]
         const speciality = req.query.speciality || ''
         const city = req.query.city || ''
-        /* console.log('value: ' + value)
-        console.log('speciality: ' + speciality)
-        console.log('city: ' + city) */
-
-        /* let { count } = await app.db('services')
-            .count('id')
-            .first() //Consulta para saber quantas páginas deverão ser geradas */
-
+       
         let count = await app.db('services')
             .innerJoin('skills', 'skills.serviceId', 'services.id')
             .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
@@ -66,7 +59,6 @@ module.exports = app => {
             .groupBy('services.id')
             .count('services.id')
             .then(numberOfServices => {
-                // console.log('numberOfServices: ' + numberOfServices.length)
                 return (numberOfServices.length)
             })
 
@@ -86,7 +78,6 @@ module.exports = app => {
             .where('cities.name', 'like', `%${city}%`)
             .groupBy('services.id')
             .then(async services => {
-                // console.log(services)
                 let servicesWithSpecialities = await getSpecialities(services)
                 let servicesWithAddress = await getAddress(servicesWithSpecialities)
                 res.send({ data: servicesWithAddress, count, limit })
@@ -109,13 +100,13 @@ module.exports = app => {
     const getAddress = async (services) => {
         for (let service of services) {
             await app.db('address')
-                .select('cities.name as city', 'states.name as state', 'country.name as country')
+                .select('cities.name as city', 'states.name as state', 'countries.name as country')
                 .innerJoin('cities', 'cities.id', 'address.cityId')
                 .innerJoin('states', 'states.id', 'cities.stateId')
-                .innerJoin('country', 'country.id', 'states.countryId')
-                .where({ id: service.addressId })
-                .then(adresses => {
-                    service.address = adresses[0]
+                .innerJoin('countries', 'countries.id', 'states.countryId')
+                .where({ 'address.id': service.addressId })
+                .then(addresses => {
+                    service.address = addresses[0]
                     delete service.addressId
                 })
         }

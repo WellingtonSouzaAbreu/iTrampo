@@ -1,0 +1,12 @@
+.como-funciona .card{
+    border-radius: 10px;
+    border:none;
+}
+
+.card-content .list{
+    list-style:disc;
+}
+
+.card-text{
+    font-size: 1.2em;
+}

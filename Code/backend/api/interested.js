@@ -32,12 +32,6 @@ module.exports = app => {
         }
     }
 
-    const get = (req, res) => { // Pega todos interessados
-        app.db('interested_service')
-            .then(interested => res.json(interested))
-            .catch(err => res.status(500).send(err))
-    }
-
     const getAlreadyInterested = async (req, res) => {
         await app.db('interested_service')
             .count('id')
@@ -46,7 +40,39 @@ module.exports = app => {
             .then(interested => interested[0].count > 0 ? res.send(true) : res.send(false))
     }
 
-    const remove = async (req, res) => {
+    const get = async (req, res) => {
+        const idService = req.params.idService || 0
+
+        await app.db('interested_service')
+            .select('users.id', 'users.name', 'users.servicesProvidedRequested')
+            .innerJoin('users', 'users.id', 'interested_service.userId')
+            .where({ 'interested_service.serviceId': idService })
+            .then(async interestedInService => {
+                let interestedWithEvaluation = await getEvaluation(interestedInService)
+                res.status(200).send(interestedWithEvaluation)
+            })
+            .catch(err => res.status(500).send('Erro ao obter interessados no serviço!'))
+    }
+
+    const getEvaluation = async (interestedInService) => {
+        // console.log(interested)
+        for (interested of interestedInService) {
+            await app.db('evaluation')
+                .where({ userId: interested.id })
+                .then(evaluations => {
+                    let averageEvaluation = evaluations.map((evaluation) => {
+                        return (evaluation.quality + evaluation.professionalism + evaluation.deadline + evaluation.comunication) / 4
+                    })
+                    interested.averageEvaluation = (averageEvaluation.reduce((total, evaluation) => total + evaluation, 0)) / averageEvaluation.length
+                })
+        }
+        return interestedInService
+    }
+
+    return { save, getAlreadyInterested, get/* , remove */ }
+}
+
+/* const remove = async (req, res) => {
         try {
             const rowsDeleted = await app.db('interested_service')
                 .where({ id: req.params.id }).del()
@@ -61,10 +87,4 @@ module.exports = app => {
         } catch (err) {
             res.status(500).send(msg)
         }
-
-
-
-    }
-
-    return { save, get, getAlreadyInterested, remove }
-}
+    } */

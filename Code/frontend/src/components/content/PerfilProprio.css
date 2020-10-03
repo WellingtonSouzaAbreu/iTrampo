@@ -7,7 +7,7 @@
 }
 
 .formulario-footer-button{
-    margin-right: 20px;
+    margin-left: 20px;
 }
 
 .specialidade-selecionada{
@@ -28,8 +28,14 @@
 }
 
 .area-curriculo{
-    display:flex;
+    border: 1px solid gainsboro;
+    padding: 0px 10px;
+    width: 100%;
+    height: 100%;
+    border-radius: 7px;
+    display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .label-curriculum {
@@ -44,6 +50,11 @@
     text-shadow: 0px 1px 1px black;
     cursor: pointer;
     border: 1px solid rgb(133, 133, 133);
+}
+
+.label-curriculum:hover{
+    background: linear-gradient(to right, #40B9FF, #299cdf);
+    border-color: black;
 }
 
 .label-profile-image:hover {

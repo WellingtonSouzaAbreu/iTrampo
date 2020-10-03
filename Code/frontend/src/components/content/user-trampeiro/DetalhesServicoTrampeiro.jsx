@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
+import { Table } from 'react-bootstrap'
 import axios from 'axios'
-import {Link} from 'react-router-dom'
+import { Link } from 'react-router-dom'
 
 import './DetalhesServicoTrampeiro.css'
 
@@ -10,6 +11,8 @@ import BtnBlueWithRadius from './../buttons/BtnBlueWithRadius.jsx'
 
 const initialState = {
     interested: false,
+    interestedInService: [],
+    userType: 'trampeiro', // Enviado pelo header da requisição
     service: {
         serviceTitle: '',
         description: '',
@@ -35,6 +38,15 @@ class DetalhesServicoTrampeiro extends Component {
     async componentDidMount() {
         await this.loadService()
         await this.getAlreadyInterested()
+        await this.loadInterested()
+    }
+
+
+    async loadService() {
+        await axios.get(`${baseApiUrl}/services/${this.props.match.params.id}`)
+            .then(res => {
+                this.setState({ service: res.data })
+            })
     }
 
     async getAlreadyInterested() { // Aqui vai o id do usuário
@@ -44,13 +56,10 @@ class DetalhesServicoTrampeiro extends Component {
             })
     }
 
-    async loadService() {
-        await axios.get(`${baseApiUrl}/services/${this.props.match.params.id}`)
-            .then(res => {
-                this.setState({ service: res.data })
-            })
+    async loadInterested() {
+        await axios.get(`${baseApiUrl}/interested-service/${this.props.match.params.id}`)
+            .then(res => this.setState({ interestedInService: res.data }))
     }
-
 
     async expressInterest(e) {
         if (e) e.preventDefault()
@@ -74,6 +83,61 @@ class DetalhesServicoTrampeiro extends Component {
         }
     }
 
+    renderTable() {
+        return (
+            <Table striped hover > {/*bordered   size="sm"   variant="dark"*/}
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Serviços Prestados</th>
+                        <th>Avaliação</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {this.renderRows()}
+                </tbody>
+            </Table>
+        )
+    }
+
+    renderRows() {
+        return (
+            this.state.interestedInService.map((interested) => {
+                return (
+                    <tr key={interested.id} onClick={_ => this.openInterested(interested.id)}>
+                        <td>{interested.name}</td>
+                        <td>{interested.servicesProvidedRequested}</td>
+                        <td>{this.renderEvaluation(interested.averageEvaluation)}</td>
+                    </tr>
+                )
+            })
+        )
+    }
+
+    openInterested(idInterested) {
+        let url = window.location.href.substring(0, 21)
+        url += `/perfil-visualizar/${idInterested}`
+        window.location.href = url
+    }
+
+    renderEvaluation(evaluation) {
+        evaluation = evaluation ? evaluation : -0.9
+        let stars = []
+        for (let i = 1; i <= evaluation; i++) {
+            stars.push(<i className="fa fa-star stars"></i>)
+        }
+
+        if (!Number.isInteger(evaluation)) {
+            stars.push(<i className="fa fa-star-half-o stars"></i>)
+        }
+
+        for (evaluation = Math.ceil(evaluation); evaluation < 5; evaluation++) {
+            stars.push(<i className="fa fa-star-o stars"></i>)
+        }
+
+        return stars
+    }
+
     render() {
         return (
             <div className="detalhes-servico-trampeiro">
@@ -84,7 +148,7 @@ class DetalhesServicoTrampeiro extends Component {
                 <div className="detalhes-body">
                     <div className="info-servico">
                         <div className="data-postagem info-label">Data de postagem:</div>
-                        <div className="data-postagem-value">{this.state.service.postDate}</div>
+                        <div className="data-postagem-value">{this.state.service.postDate.split('T')[0]}</div>
                         <div className="local info-label">Local:</div>
                         <div className="local-value">{`${this.state.service.address.city} - ${this.state.service.address.state}, ${this.state.service.address.country}`}</div>
                         <div className="valor info-label">Valor:</div>
@@ -117,7 +181,10 @@ class DetalhesServicoTrampeiro extends Component {
                 </div>
                 <hr />
                 <div className="detalhes-footer">
-                    {this.renderManifestArea()}
+                    {this.state.userType == 'empregador' ?
+                        this.renderTable() :
+                        this.renderManifestArea()
+                    }
                 </div>
             </div>
         )

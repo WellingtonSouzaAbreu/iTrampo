@@ -18,6 +18,9 @@ const initialState = {
     selectedSpecialitiesLabels: [],
     specialityIdSelected: 0,
     directoryProfileImage: '',
+    directoryCurriculum: '',
+    curriculum: null,
+    profileImage: null,
     user: {
         id: 217,
         name: '',
@@ -28,7 +31,6 @@ const initialState = {
         userType: '',  //TODO A definir
         currentPackage: '',  // TODO A definir
         remainingPackageDays: 0, // TODO A definir
-        curriculumId: 0,  // TODO
         servicesProvidedRequested: 0, // TODO
         genre: '',
         dateOfBirth: '',
@@ -51,6 +53,7 @@ class PerfilProprio extends Component {
         this.addNewContact = this.addNewContact.bind(this)
         this.addNewSpeciality = this.addNewSpeciality.bind(this)
         this.edit = this.edit.bind(this)
+        this.viewCurriculum = this.viewCurriculum.bind(this)
         this.save = this.save.bind(this)
     }
 
@@ -61,14 +64,18 @@ class PerfilProprio extends Component {
     }
 
     async loadUser() {
-        await axios.get(`${baseApiUrl}/users/220`)
+        await axios.get(`${baseApiUrl}/users/2`)
             .then(res => {
                 let selectedSpecialitiesLabels = res.data.selectedSpecialitiesLabels
                 delete res.data.selectedSpecialitiesLabels
 
-                let directoryProfileImage = `${baseApiUrl}/profile-images/${res.data.profileImage}`
+                const directoryProfileImage = `${baseApiUrl}/profile-images/${res.data.profileImage}`
                 window.alert(directoryProfileImage)
-                this.setState({ user: res.data, directoryProfileImage, selectedSpecialitiesLabels })
+
+                const directoryCurriculum = `${baseApiUrl}/curriculum/${res.data.curriculum}`
+                window.alert(directoryCurriculum)
+
+                this.setState({ user: res.data, directoryProfileImage, directoryCurriculum, selectedSpecialitiesLabels })
             })
             .catch(err => window.alert('Erro ao consultar usuário pelo Id!'))
 
@@ -278,20 +285,6 @@ class PerfilProprio extends Component {
         this.setState({ profileImage: formData })
     }
 
-    updateFieldCurriculum(e) {
-        // if (e.target.files[0].type.split('/')[0] === 'image') {
-        this.renderPreviewProfileImage(e.target.files[0])
-        /* } else {
-            window.alert('O arquivo deve ser uma imagem!')
-            return
-        } */
-
-        let formData = new FormData();
-        formData.append(e.target.name, e.target.files[0])
-
-        this.setState({ profileImage: formData })
-    }
-
     renderPreviewProfileImage(file) {
         const fileReader = new FileReader()
         fileReader.onloadend = () => {
@@ -300,16 +293,38 @@ class PerfilProprio extends Component {
         fileReader.readAsDataURL(file)
     }
 
+    viewCurriculum() {
+        if (this.state.directoryCurriculum !== null) {
+            //Segue o fluxo do link
+        } else {
+            window.alert('Você não possui nenhum currículo cadastrado!')
+        }
+    }
+
+    updateFieldCurriculum(e) {
+        if (e.target.files[0].type === 'application/pdf') {
+        } else {
+            window.alert('O arquivo deve estar no formato PDF!')
+            return
+        }
+
+        let formData = new FormData();
+        formData.append(e.target.name, e.target.files[0])
+        console.log(e.target.files[0])
+
+        this.setState({ curriculum: formData })
+    }
+
     async save() {
         await axios.put(`${baseApiUrl}/users/${this.state.user.id}`, this.state.user)
-            .then(res => {
+            .then(async res => {
                 let idUser = res.data
                 window.alert('Perfil atualizado com sucesso')
-                this.registerProfileImage(idUser)
-                this.setState({ mode: 'save' })
+                await this.registerProfileImage(idUser)
+                await this.registerCurriculum(idUser)
+                await this.loadUser()
             })
             .catch(err => window.alert(err.response.data))
-
     }
 
     async registerProfileImage(idUser) {
@@ -321,6 +336,18 @@ class PerfilProprio extends Component {
                 .catch(err => window.alert(err.response.data))
         } else {
             window.alert('Não foi definida uma foto do perfil')
+        }
+    }
+
+    async registerCurriculum(idUser) {
+        if (this.state.curriculum != null) {
+            await axios.post(`${baseApiUrl}/curriculum/${idUser}`, this.state.curriculum)
+                .then(res => {
+                    window.alert('Currículo cadastrado com sucesso!')
+                })
+                .catch(err => window.alert(err.response.data))
+        } else {
+            window.alert('Não foi definido um currículo!')
         }
     }
 
@@ -425,8 +452,12 @@ class PerfilProprio extends Component {
                         </div>
                     </form>
                     <div className="formulario-footer">
-                        <div className="formulario-footer-button"><BtnBlueWithRadius label="Editar" click={this.edit} /></div>
-                        <div><BtnBlueWithRadius label="Salvar" click={this.save} /></div>
+                        <div><BtnBlueWithRadius label="Editar" style={'bg-edit'} click={this.edit} /></div>
+                        {
+                            this.state.mode === 'edit' ?
+                                <div className="formulario-footer-button"><BtnBlueWithRadius label="Salvar" click={this.save} /></div>
+                                : ''
+                        }
                     </div>
 
                 </div>
@@ -441,7 +472,7 @@ class PerfilProprio extends Component {
                     </div>
                     <div className="foto-perfil-footer">
                         <div>
-                            <div className="area-file">
+                            <div className="area-file" >
                                 <input hidden type="file" id="profile-image" name="profile-image" onChange={e => this.updateFieldProfileImage(e)} />
                                 <label for="profile-image" className="label-profile-image">Escolher Foto</label>
                             </div>
@@ -461,17 +492,6 @@ class PerfilProprio extends Component {
                                 </div>
                                 <div className="row mb-2">
                                     <div class="col">
-                                        Currículo:
-                                    </div>
-                                    <div class="col">
-                                        <div className="area-curriculo">
-                                            <input hidden type="file" id="curriculum" name="curriculum" onChange={e => this.updateFieldCurriculum(e)} />
-                                            <label for="curriculum" className="label-curriculum">Anexar</label>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div className="row mb-2">
-                                    <div class="col">
                                         Pacote Atual:
                                     </div>
                                     <div class="col">
@@ -484,6 +504,20 @@ class PerfilProprio extends Component {
                                     </div>
                                     <div class="col">
                                         {this.state.user.remainingPackageDays}
+                                    </div>
+                                </div>
+                                <div className="row mb-2">
+                                    <div class="col">
+                                        <div className="area-curriculo">
+                                            Currículo:
+                                            <div className="curriculo-controles">
+                                                <a href={this.state.directoryCurriculum} target="blank">
+                                                    <BtnBlueWithRadius label="Visualizar" click={this.viewCurriculum}></BtnBlueWithRadius>
+                                                </a>
+                                                <input hidden type="file" id="curriculum" name="curriculum" onChange={e => this.updateFieldCurriculum(e)} />
+                                                <label for="curriculum" className="label-curriculum ml-2">Anexar</label>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>

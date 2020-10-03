@@ -32,7 +32,7 @@ module.exports = app => {
                 .update(service)
                 .where({ id: service.id })
                 .then(_ => res.status(204).send(service))
-                .catch(err => res.status(500).send())
+                .catch(err => res.status(500).send(err))
         } else {
             app.db('services')
                 .insert(service)
@@ -47,7 +47,7 @@ module.exports = app => {
         const value = req.query.value ? req.query.value.split(',') : [0, 99999]
         const speciality = req.query.speciality || ''
         const city = req.query.city || ''
-       
+
         let count = await app.db('services')
             .innerJoin('skills', 'skills.serviceId', 'services.id')
             .innerJoin('specialities', 'skills.specialityId', 'specialities.id')
@@ -59,10 +59,11 @@ module.exports = app => {
             .groupBy('services.id')
             .count('services.id')
             .then(numberOfServices => {
+                console.log(numberOfServices.length)
                 return (numberOfServices.length)
             })
 
-        console.log(count)
+        console.log('count: ' + count)
         count = parseInt(count)
         count = count ? count : 1
 

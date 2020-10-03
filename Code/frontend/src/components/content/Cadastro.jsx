@@ -77,9 +77,9 @@ class Cadastro extends Component {
     renderContacts() {
         return this.state.user.contacts.numbers.map((number, i) => {
             return <>
-                <label for="contact" class="col-sm-2 col-form-label">{`Contato ${i + 1}`}</label>
-                <div class="col-sm-9 mb-1">
-                    <input value={number} onChange={e => this.updateFieldContact(e, i)} type="text" class="form-control" id="contact" placeholder="Número" required />
+                <label for="contact" className="col-sm-2 col-form-label">{`Contato ${i + 1}`}</label>
+                <div className="col-sm-9 mb-1">
+                    <input value={number} onChange={e => this.updateFieldContact(e, i)} type="text" className="form-control" id="contact" placeholder="Número" required />
                 </div>
             </>
         })
@@ -95,8 +95,11 @@ class Cadastro extends Component {
     addNewContact(e) {
         if (e) e.preventDefault()
         let user = { ...this.state.user }
-        user.contacts.numbers.push('')
-        this.setState({ user })
+
+        if (user.contacts.numbers[user.contacts.numbers.length - 1] != '') {
+            user.contacts.numbers.push('')
+            this.setState({ user })
+        }
     }
 
     updateFieldEmail(e) {
@@ -288,54 +291,54 @@ class Cadastro extends Component {
                 <div className="formulario col-sm-8 border-right">
                     <h1 className="mb-4">Cadastre-se</h1>
                     <form>
-                        <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-label">Nome</label>
-                            <div class="col">
-                                <input value={this.state.user.name} onChange={e => this.updateFieldName(e)} type="email" class="form-control" id="name" placeholder="Nome" required />
+                        <div className="form-group row">
+                            <label for="name" className="col-sm-2 col-form-label">Nome</label>
+                            <div className="col">
+                                <input value={this.state.user.name} onChange={e => this.updateFieldName(e)} type="email" className="form-control" id="name" placeholder="Nome" required />
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="birth" class="col-sm-2 col-form-label">Nascimento</label>
-                            <div class="col">
-                                <input value={this.state.user.dateOfBirth} onChange={e => this.updateFielddateOfBirth(e)} type="date" class="form-control" id="birth" placeholder="Nascimento" required />
+                        <div className="form-group row">
+                            <label for="birth" className="col-sm-2 col-form-label">Nascimento</label>
+                            <div className="col">
+                                <input value={this.state.user.dateOfBirth} onChange={e => this.updateFielddateOfBirth(e)} type="date" className="form-control" id="birth" placeholder="Nascimento" required />
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="genre" class="col-sm-2 col-form-label">Gênero</label>
-                            <div class="form-check form-check-inline ml-3">
-                                <input onChange={e => this.updateFieldGenre(e)} class="form-check-input" name="radio-genre" type="radio" id="rb-masculino" checked={this.state.user.genre == 'M'} value="M" />
-                                <label class="form-check-label" for="rb-masculino">Masculino</label>
+                        <div className="form-group row">
+                            <label for="genre" className="col-sm-2 col-form-label">Gênero</label>
+                            <div className="form-check form-check-inline ml-3">
+                                <input onChange={e => this.updateFieldGenre(e)} className="form-check-input" name="radio-genre" type="radio" id="rb-masculino" checked={this.state.user.genre == 'M'} value="M" />
+                                <label className="form-check-label" for="rb-masculino">Masculino</label>
                             </div>
-                            <div class="form-check form-check-inline">
-                                <input onChange={e => this.updateFieldGenre(e)} class="form-check-input" name="radio-genre" type="radio" id="rb-feminino" checked={this.state.user.genre == 'F'} value="F" />
-                                <label class="form-check-label" for="rb-feminino">Feminino</label>
+                            <div className="form-check form-check-inline">
+                                <input onChange={e => this.updateFieldGenre(e)} className="form-check-input" name="radio-genre" type="radio" id="rb-feminino" checked={this.state.user.genre == 'F'} value="F" />
+                                <label className="form-check-label" for="rb-feminino">Feminino</label>
                             </div>
                         </div>
-                        <div class="form-group row">
+                        <div className="form-group row">
                             {this.renderContacts()}
                             <BtnGrayWithRadius label="+" click={this.addNewContact} />
                         </div>
-                        <div class="form-group row">
-                            <label for="email" class="col-sm-2 col-form-label">Email</label>
-                            <div class="col">
-                                <input value={this.state.user.email} onChange={e => this.updateFieldEmail(e)} type="email" class="form-control" id="email" placeholder="Email" required />
+                        <div className="form-group row">
+                            <label for="email" className="col-sm-2 col-form-label">Email</label>
+                            <div className="col">
+                                <input value={this.state.user.email} onChange={e => this.updateFieldEmail(e)} type="email" className="form-control" id="email" placeholder="Email" required />
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="password" class="col-sm-2 col-form-label">Senha</label>
-                            <div class="col">
-                                <input value={this.state.user.password} onChange={e => this.updateFieldPassword(e)} type="password" class="form-control" id="password" placeholder="Senha" required />
+                        <div className="form-group row">
+                            <label for="password" className="col-sm-2 col-form-label">Senha</label>
+                            <div className="col">
+                                <input value={this.state.user.password} onChange={e => this.updateFieldPassword(e)} type="password" className="form-control" id="password" placeholder="Senha" required />
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="confirm-password" class="col-sm-2 col-form-label">Repetir Senha</label>
-                            <div class="col">
-                                <input onChange={e => this.updateFieldConfirmPassword(e)} value={this.state.user.confirmPassword} type="password" class="form-control" id="confirm-password" placeholder="Repetir Senha" required />
+                        <div className="form-group row">
+                            <label for="confirm-password" className="col-sm-2 col-form-label">Repetir Senha</label>
+                            <div className="col">
+                                <input onChange={e => this.updateFieldConfirmPassword(e)} value={this.state.user.confirmPassword} type="password" className="form-control" id="confirm-password" placeholder="Repetir Senha" required />
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="address" class="col-sm-2 col-form-label">Endereço</label>
-                            <div class="col">
+                        <div className="form-group row">
+                            <label for="address" className="col-sm-2 col-form-label">Endereço</label>
+                            <div className="col">
                                 <select className="form-control" onChange={e => this.loadStates(e)}>
                                     <option value={0}>País...</option>
                                     {this.renderCountriesForComboBox()}
@@ -348,24 +351,24 @@ class Cadastro extends Component {
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="city" class="col-sm-2 col-form-label">Cidade</label>
-                            <div class="col">
+                        <div className="form-group row">
+                            <label for="city" className="col-sm-2 col-form-label">Cidade</label>
+                            <div className="col">
                                 <select className="form-control" onChange={e => this.updateFieldCity(e)} required>
                                     <option value=''>Cidade...</option>
                                     {this.renderCitiesForComboBox()}
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="neighborhood" class="col-sm-2 col-form-label">Bairro</label>
-                            <div class="col">
-                                <input value={this.state.user.address.neighborhood} onChange={e => this.updateFieldNeighborhood(e)} type="text" class="form-control" id="neighborhood" placeholder="Bairro" required />
+                        <div className="form-group row">
+                            <label for="neighborhood" className="col-sm-2 col-form-label">Bairro</label>
+                            <div className="col">
+                                <input value={this.state.user.address.neighborhood} onChange={e => this.updateFieldNeighborhood(e)} type="text" className="form-control" id="neighborhood" placeholder="Bairro" required />
                             </div>
                         </div>
-                        <div class="form-group row">
-                            <label for="speciality" class="col-sm-2 col-form-label">Especialidades</label>
-                            <div class="col-sm-9">
+                        <div className="form-group row">
+                            <label for="speciality" className="col-sm-2 col-form-label">Especialidades</label>
+                            <div className="col-sm-9">
                                 <select className="form-control" onChange={e => this.updateFieldSpecialities(e)} id="speciality" required>
                                     <option value={0}>Selecione ...</option>
                                     {this.renderSpecialitiesForComboBox()}
@@ -374,17 +377,17 @@ class Cadastro extends Component {
                             <BtnGrayWithRadius label="+" click={this.addNewSpeciality} />
                             <div className="col-2"></div>
                             <div className="col-9">
-                                <small class="form-text text-muted ml-1">{this.renderSelectedSpecialities()}</small>
+                                <small className="form-text text-muted ml-1">{this.renderSelectedSpecialities()}</small>
                             </div>
                         </div>
-                        <div class="form-group col-form-label">
+                        <div className="form-group col-form-label">
                             <label for="description">Descreva o que você sabe fazer:</label>
-                            <textarea value={this.state.user.description} onChange={e => this.updateFieldDescription(e)} class="form-control" id="description" rows="5" required></textarea>
+                            <textarea value={this.state.user.description} onChange={e => this.updateFieldDescription(e)} className="form-control" id="description" rows="5" required></textarea>
                         </div>
-                        <div class="form-group">
-                            <div class="form-check terms-and-conditions">
-                                <input value={this.state.termsAndConditions} onChange={e => this.updateFieldTermsAndConditions(e)} checked={this.state.termsAndConditions} class="form-check-input" type="checkbox" id="terms-and-conditions" required />
-                                <label class="form-check-label" for="terms-and-conditions">
+                        <div className="form-group">
+                            <div className="form-check terms-and-conditions">
+                                <input value={this.state.termsAndConditions} onChange={e => this.updateFieldTermsAndConditions(e)} checked={this.state.termsAndConditions} className="form-check-input" type="checkbox" id="terms-and-conditions" required />
+                                <label className="form-check-label" for="terms-and-conditions">
                                     Concordo com o termos e condições do iTrampo
                                 </label>
                             </div>

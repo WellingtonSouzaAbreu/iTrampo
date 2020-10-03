@@ -1,4 +1,3 @@
-// const { update } = require('../config/db')
 const fs = require('fs')
 
 module.exports = app => {
@@ -31,11 +30,12 @@ module.exports = app => {
                 .where({ id: idUser })
                 .then(async profileImage => {
                     if (profileImage != []) {
-                        console.log('Já existe uma foto cadastrada')
+                        console.log('Já existe uma foto cadastrada!')
+                        console.log(profileImage)
                         profileImage = profileImage[0].profileImage
 
                         fs.unlink(`${__dirname}/../profile-images/${profileImage}`, (err) => {
-                            if(err) res.status('Erro ao salvar')
+                            if (err) res.status('Erro ao salvar foto do perfil')
                             console.log('Arquivo deletado!')
                         })
 
@@ -43,20 +43,22 @@ module.exports = app => {
                         console.log('Não há nenhuma foto cadastrada')
                     }
                 })
-
-
-            app.db('users')
-                .where({ id: idUser })
-                .update({ profileImage: file.filename })
-                .then(fileName => {
-                    console.log(fileName)
-                    res.status(204).send() // End diz que finalizou o upload
+                .then(async _ => {
+                    await app.db('users')
+                        .where({ id: idUser })
+                        .update({ profileImage: file.filename })
+                        .then(fileName => {
+                            console.log(fileName)
+                            res.status(204).send() // End diz que finalizou o upload
+                        })
                 })
+
+
+
         })
     }
 
     const getById = async (req, res) => {
-        console.log('get by idd')
         await app.db('users')
             .select('profileImage')
             .where({ id: idUser })
@@ -64,6 +66,6 @@ module.exports = app => {
             .catch(err => res.status(500).send())
     }
 
-    return { save, getById }
+    return { save/* , getById */ }
 
 }

@@ -22,10 +22,10 @@ module.exports = app => {
         const userSpecialitiesId = user.specialities
         delete user.specialities
 
-        console.log(user)
+       /*  console.log(user)
         console.log(userAddress)
         console.log(userContacts)
-        console.log(userSpecialitiesId)
+        console.log(userSpecialitiesId) */
 
         if (req.params.id) user.id = req.params.id // Usado para editar
 
@@ -61,11 +61,12 @@ module.exports = app => {
         delete user.confirmPassword
 
         if (user.id) {
+            console.log(user.id)
             try {
                 await app.db('users')
                     .update(user)
-                    .where({ id: 207 })
-                    .then(_ => console.log('Usuarioa atualizado com sucesso'))
+                    .where({ id: user.id })
+                    .then(_ => console.log('Usuario atualizado com sucesso'))
 
                 await app.db('address')
                     .update({ neighborhood: userAddress.neighborhood, cityId: userAddress.cityId })
@@ -121,7 +122,6 @@ module.exports = app => {
                         .insert({ userId: userContacts.userId, specialityId: specialityId }) // TODO specialityId
                         .then(rowCount => {
                             console.log('Especialidades cadastradas com sucesso')
-                            console.log(userContacts.userId)
                             res.status(200).json(userContacts.userId)
                         })
                         .catch(err => res.status(500).send('Erro ao cadastrar especialidades'))
@@ -141,25 +141,21 @@ module.exports = app => {
 
     const getById = async (req, res) => {
         const idUser = req.params.id
-        console.log(idUser)
 
         await app.db('users')
-            .select('id', 'name', 'password', 'email', 'description', 'userType', 'currentPackage', 'genre', 'dateOfBirth', 'profileImage', 'servicesProvidedRequested', 'remainingPackageDays', 'addressId', 'curriculumId')
+            .select('id', 'name', 'password', 'email', 'description', 'userType', 'currentPackage', 'genre', 'dateOfBirth', 'profileImage', 'servicesProvidedRequested', 'remainingPackageDays', 'addressId', 'curriculum')
             .where({ id: idUser })
             .then(async user => {
                 [user] = user
                 let userWithAddress = await getAddress(user)
-                console.log(userWithAddress)
                 let userWithContacts = await getContacts(userWithAddress)
                 let userWithSpecialities = await getSpecialities(userWithContacts)
-                console.log(userWithSpecialities)
                 res.status(200).send(userWithSpecialities)
             })
             .catch(err => res.status(500).send('Erro ao consultar usuário pelo Id!'))
     }
 
     const getAddress = async (user) => {
-        console.log(user.addressId)
         await app.db('address')
             .select('address.neighborhood', 'address.cityId', 'states.id as idState', 'countries.id as idCountry')
             .where({ 'address.id': user.addressId })
@@ -170,7 +166,6 @@ module.exports = app => {
                 [user.address] = address
                 user.address.id = user.addressId
             })
-        console.log(user)
         return user
     }
 
@@ -194,10 +189,46 @@ module.exports = app => {
                 user.specialities = specialities.map(speciality => speciality.id)
                 user.selectedSpecialitiesLabels = specialities.map(speciality => speciality.speciality)
             })
-        console.log(user)
-
         return user
     }
 
-    return { save, getById }
+    const getUserViewById = async (req, res) => {
+        idUser = req.params.id || 0
+
+        await app.db('users')
+            .select('id', 'name', 'dateOfBirth', 'genre', 'email', 'curriculum', 'profileImage', 'description', 'addressId')
+            .where({ 'users.id': idUser })
+            .then(async user => {
+                let userWithAddressPreview = await getAddressPreview(user)
+                let userWithContacts = await getContacts(userWithAddressPreview)
+                let userWithSpecialities = await getSpecialitiesPreview(userWithContacts)
+                res.send(userWithSpecialities)
+            })
+    }
+
+    const getAddressPreview = async ([user]) => {
+        await app.db('address')
+            .select('address.neighborhood', 'cities.name as city', 'states.name as state', 'countries.name as country')
+            .where({ 'address.id': user.addressId })
+            .innerJoin('cities', 'address.cityId', 'cities.id')
+            .innerJoin('states', 'cities.stateId', 'states.id')
+            .innerJoin('countries', 'states.countryId', 'countries.id')
+            .then(address => {
+                [user.address] = address
+            })
+        return user
+    }
+
+    const getSpecialitiesPreview = async (user) => {
+        await app.db('specialities')
+            .select('specialities.speciality')
+            .innerJoin('user_specialities', 'user_specialities.specialityId', 'specialities.id')
+            .where({ 'user_specialities.userId': user.id })
+            .then(specialities => {
+                user.specialities = specialities.map(speciality => speciality.speciality)
+            })
+        return user
+    }
+
+    return { save, getById, getUserViewById }
 }

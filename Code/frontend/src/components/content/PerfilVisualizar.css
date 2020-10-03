@@ -1,0 +1,8 @@
+.perfil-visualizar {
+    display: flex;
+    justify-content: space-between;
+}
+
+.bold{
+    font-weight: 700;
+}

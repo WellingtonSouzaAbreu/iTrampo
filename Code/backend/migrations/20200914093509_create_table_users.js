@@ -15,7 +15,8 @@ exports.up = function (knex) {
         table.integer('remainingPackageDays').notNull()
 
         table.integer('addressId')
-        table.integer('curriculumId')
+        table.string('curriculum')
+        // table.integer('curriculumId') // Old
         
     })
 };

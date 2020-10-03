@@ -6,4 +6,5 @@ module.exports = app => {
     app.use(bodyParser.json())
     app.use(cors())
     app.use('/profile-images', express.static('profile-images'))
+    app.use('/curriculum', express.static('curriculum'))
 }

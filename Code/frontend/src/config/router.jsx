@@ -9,9 +9,8 @@ import ServicosTrampeiro from './../components/content/user-trampeiro/ServicosTr
 import ComoFunciona from './../components/content/ComoFunciona.jsx'
 import PerfilProprio from './../components/content/PerfilProprio.jsx'
 import SolicitacaoServico from './../components/content/user-empregador/SolicitacaoServico.jsx'
-import DetalhesServicoTrampeiro from './../components/content/user-trampeiro/DetalhesServicoTrampeiro.jsx'
+import DetalhesServico from './../components/content/DetalhesServico.jsx'
 import ServicosEmpregador from './../components/content/user-empregador/ServicosEmpregador.jsx'
-import DetalhesServicoEmpregador from './../components/content/user-empregador/DetalhesServicoEmpregador.jsx'
 import PerfilVisualizar from './../components/content/PerfilVisualizar.jsx'
 
 
@@ -25,11 +24,11 @@ export default props =>
         <Route exact path="/como-funciona" component={ComoFunciona} />
         <Route exact path="/perfil-proprio" component={PerfilProprio} />
         <Route exact path="/solicitacao-servico" component={SolicitacaoServico} />
-        <Route exact path="/detalhes-servico-trampeiro/:id" component={DetalhesServicoTrampeiro} />
+        <Route exact path="/solicitacao-servico/:id" component={SolicitacaoServico} />
+        <Route exact path="/detalhes-servico/:id" component={DetalhesServico} />
         <Route exact path="/servicos-empregador" component={ServicosEmpregador} />
-        <Route exact path="/detalhes-servico-empregador" component={DetalhesServicoEmpregador} />
         <Route exact path="/perfil-visualizar/:id" component={PerfilVisualizar} />
-        
+
 
         <Redirect from="*" to="/login" />
     </Switch>

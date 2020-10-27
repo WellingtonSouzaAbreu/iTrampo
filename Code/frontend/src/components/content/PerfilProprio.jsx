@@ -5,11 +5,15 @@ import baseApiUrl from './../../global.js'
 
 import BtnGrayWithRadius from './buttons/BtnGrayWithRadius.jsx'
 import BtnBlueWithRadius from './buttons/BtnBlueWithRadius.jsx'
+import Toast from '../toasts/Toast.jsx'
 
 import './PerfilProprio.css'
 import defaultProfileImage from './../../assets/images/default-user-profile-image.jpg'
 
 const initialState = {
+    toastMessage: '',
+    toastIsVisible: false,
+    toastType: '',
     mode: 'save',
     countries: [],
     states: [],
@@ -64,16 +68,18 @@ class PerfilProprio extends Component {
     }
 
     async loadUser() {
-        await axios.get(`${baseApiUrl}/users/2`)
+        const idUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : ''
+
+        await axios.get(`${baseApiUrl}/users/${idUser}`)
             .then(res => {
                 let selectedSpecialitiesLabels = res.data.selectedSpecialitiesLabels
                 delete res.data.selectedSpecialitiesLabels
 
-                const directoryProfileImage = `${baseApiUrl}/profile-images/${res.data.profileImage}`
-                window.alert(directoryProfileImage)
+                let directoryProfileImage
+                if (res.data.profileImage) directoryProfileImage = `${baseApiUrl}/profile-images/${res.data.profileImage}`
 
-                const directoryCurriculum = `${baseApiUrl}/curriculum/${res.data.curriculum}`
-                window.alert(directoryCurriculum)
+                let directoryCurriculum
+                if (res.data.curriculum) directoryCurriculum = `${baseApiUrl}/curriculum/${res.data.curriculum}`
 
                 this.setState({ user: res.data, directoryProfileImage, directoryCurriculum, selectedSpecialitiesLabels })
             })
@@ -294,7 +300,7 @@ class PerfilProprio extends Component {
     }
 
     viewCurriculum() {
-        if (this.state.directoryCurriculum !== null) {
+        if (this.state.directoryCurriculum != null) {
             //Segue o fluxo do link
         } else {
             window.alert('Você não possui nenhum currículo cadastrado!')
@@ -319,12 +325,19 @@ class PerfilProprio extends Component {
         await axios.put(`${baseApiUrl}/users/${this.state.user.id}`, this.state.user)
             .then(async res => {
                 let idUser = res.data
-                window.alert('Perfil atualizado com sucesso')
+                // window.alert('Perfil atualizado com sucesso')
+                this.showToast('Perfil atualizado com sucesso!', 'success')
                 await this.registerProfileImage(idUser)
                 await this.registerCurriculum(idUser)
                 await this.loadUser()
+                this.setState({ mode: 'save' })
             })
-            .catch(err => window.alert(err.response.data))
+            .catch(err => this.showToast(err.response.data,'error'))
+    }
+
+    showToast(toastMessage, toastType) {
+        this.setState({ toastMessage: toastMessage, toastIsVisible: true , toastType: toastType})
+        setTimeout(() => this.setState({ toastIsVisible: false }), 4000)
     }
 
     async registerProfileImage(idUser) {
@@ -353,169 +366,182 @@ class PerfilProprio extends Component {
 
     render() {
         return (
-            <div className='perfil-proprio'>
-                <div className="formulario col-sm-8 border-right">
-                    <h1 className="mb-4">Meus dados</h1>
-                    <form>
-                        <div class="form-group row">
-                            <label for="name" class="col-sm-2 col-form-label">Nome</label>
-                            <div class="col">
-                                <input value={this.state.user.name} onChange={e => this.updateFieldName(e)} type="email" class="form-control" id="name" placeholder="Nome" required disabled={this.checkMode()} />
+            <>
+                {Toast(this.state.toastMessage, this.state.toastIsVisible, this.state.toastType)}
+                <div className='perfil-proprio'>
+                    <div className="formulario col-sm-8 border-right">
+                        <h1 className="mb-4">Meus dados</h1>
+                        <form>
+                            <div class="form-group row">
+                                <label for="name" class="col-sm-2 col-form-label">Nome</label>
+                                <div class="col">
+                                    <input value={this.state.user.name} onChange={e => this.updateFieldName(e)} type="email" class="form-control" id="name" placeholder="Nome" required disabled={this.checkMode()} />
+                                </div>
                             </div>
+                            <div class="form-group row">
+                                <label for="birth" class="col-sm-2 col-form-label">Nascimento</label>
+                                <div class="col">
+                                    <input value={this.state.user.dateOfBirth.split('T')[0]} onChange={e => this.updateFieldDateOfBirth(e)} type="date" class="form-control" id="birth" placeholder="Nascimento" required disabled={this.checkMode()} />
+                                </div>
+                            </div>
+                            <div class="form-group row" >
+                                <label for="genre" class="col-sm-2 col-form-label">Gênero</label>
+                                <div class="form-check form-check-inline ml-3" >
+                                    <input onChange={e => this.updateFieldGenre(e)} class="form-check-input" name="radio-genre" type="radio" id="rb-masculino" checked={this.state.user.genre == 'M'} value="M" disabled={this.checkMode()} />
+                                    <label class="form-check-label" for="rb-masculino">Masculino</label>
+                                </div>
+                                <div class="form-check form-check-inline">
+                                    <input onChange={e => this.updateFieldGenre(e)} class="form-check-input" name="radio-genre" type="radio" id="rb-feminino" checked={this.state.user.genre == 'F'} value="F" disabled={this.checkMode()} />
+                                    <label class="form-check-label" for="rb-feminino">Feminino</label>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                {this.renderContacts()}
+                                <BtnGrayWithRadius label="+" click={this.addNewContact} />
+                            </div>
+                            <div class="form-group row">
+                                <label for="email" class="col-sm-2 col-form-label">Email</label>
+                                <div class="col">
+                                    <input value={this.state.user.email} onChange={e => this.updateFieldEmail(e)} type="email" class="form-control" id="email" placeholder="Email" required disabled={this.checkMode()} />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="password" class="col-sm-2 col-form-label">Senha</label>
+                                <div class="col">
+                                    <input value={this.state.user.password} onChange={e => this.updateFieldPassword(e)} type="password" class="form-control" id="password" placeholder="Senha" required disabled={this.checkMode()} />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="confirm-password" class="col-sm-2 col-form-label">Repetir Senha</label>
+                                <div class="col">
+                                    <input onChange={e => this.updateFieldConfirmPassword(e)} value={this.state.user.confirmPassword} type="password" class="form-control" id="confirm-password" placeholder="Repetir Senha" required disabled={this.checkMode()} />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="address" class="col-sm-2 col-form-label">Endereço</label>
+                                <div class="col">
+                                    <select className="form-control" onChange={e => this.loadStates(e)} disabled={this.checkMode()}>
+                                        <option value={0}>País...</option>
+                                        {this.renderCountriesForComboBox()}
+                                    </select>
+                                </div>
+                                <div className="col">
+                                    <select className="form-control" onChange={e => this.loadCities(e)} disabled={this.checkMode()}>
+                                        <option value={0}>Estado...</option>
+                                        {this.renderStatesForComboBox()}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="city" class="col-sm-2 col-form-label">Cidade</label>
+                                <div class="col">
+                                    <select className="form-control" onChange={e => this.updateFieldCity(e)} required disabled={this.checkMode()}>
+                                        <option value=''>Cidade...</option>
+                                        {this.renderCitiesForComboBox()}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="neighborhood" class="col-sm-2 col-form-label">Bairro</label>
+                                <div class="col">
+                                    <input value={this.state.user.address.neighborhood} onChange={e => this.updateFieldNeighborhood(e)} type="text" class="form-control" id="neighborhood" placeholder="Bairro" required disabled={this.checkMode()} />
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="speciality" class="col-sm-2 col-form-label">Especialidades</label>
+                                <div class="col-sm-9">
+                                    <select className="form-control" onChange={e => this.updateFieldSpecialities(e)} id="speciality" required disabled={this.checkMode()}>
+                                        <option value={0}>Selecione ...</option>
+                                        {this.renderSpecialitiesForComboBox()}
+                                    </select>
+                                </div>
+                                <BtnGrayWithRadius label="+" click={this.addNewSpeciality} />
+                                <div className="col-2"></div>
+                                <div className="col-9">
+                                    <small class="form-text text-muted ml-1">{this.renderSelectedSpecialities()}</small>
+                                </div>
+                            </div>
+                            <div class="form-group col-form-label">
+                                <label for="description">Descreva o que você sabe fazer:</label>
+                                <textarea value={this.state.user.description} onChange={e => this.updateFieldDescription(e)} class="form-control" id="description" rows="5" required disabled={this.checkMode()}></textarea>
+                            </div>
+                        </form>
+                        <div className="formulario-footer">
+                            <div><BtnBlueWithRadius label="Editar" style={'bg-edit'} click={this.edit} /></div>
+                            {
+                                this.state.mode === 'edit' ?
+                                    <div className="formulario-footer-button"><BtnBlueWithRadius label="Salvar" click={this.save} /></div>
+                                    : ''
+                            }
                         </div>
-                        <div class="form-group row">
-                            <label for="birth" class="col-sm-2 col-form-label">Nascimento</label>
-                            <div class="col">
-                                <input value={this.state.user.dateOfBirth.split('T')[0]} onChange={e => this.updateFieldDateOfBirth(e)} type="date" class="form-control" id="birth" placeholder="Nascimento" required disabled={this.checkMode()} />
-                            </div>
-                        </div>
-                        <div class="form-group row" >
-                            <label for="genre" class="col-sm-2 col-form-label">Gênero</label>
-                            <div class="form-check form-check-inline ml-3" >
-                                <input onChange={e => this.updateFieldGenre(e)} class="form-check-input" name="radio-genre" type="radio" id="rb-masculino" checked={this.state.user.genre == 'M'} value="M" disabled={this.checkMode()} />
-                                <label class="form-check-label" for="rb-masculino">Masculino</label>
-                            </div>
-                            <div class="form-check form-check-inline">
-                                <input onChange={e => this.updateFieldGenre(e)} class="form-check-input" name="radio-genre" type="radio" id="rb-feminino" checked={this.state.user.genre == 'F'} value="F" disabled={this.checkMode()} />
-                                <label class="form-check-label" for="rb-feminino">Feminino</label>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            {this.renderContacts()}
-                            <BtnGrayWithRadius label="+" click={this.addNewContact} />
-                        </div>
-                        <div class="form-group row">
-                            <label for="email" class="col-sm-2 col-form-label">Email</label>
-                            <div class="col">
-                                <input value={this.state.user.email} onChange={e => this.updateFieldEmail(e)} type="email" class="form-control" id="email" placeholder="Email" required disabled={this.checkMode()} />
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="password" class="col-sm-2 col-form-label">Senha</label>
-                            <div class="col">
-                                <input value={this.state.user.password} onChange={e => this.updateFieldPassword(e)} type="password" class="form-control" id="password" placeholder="Senha" required disabled={this.checkMode()} />
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="confirm-password" class="col-sm-2 col-form-label">Repetir Senha</label>
-                            <div class="col">
-                                <input onChange={e => this.updateFieldConfirmPassword(e)} value={this.state.user.confirmPassword} type="password" class="form-control" id="confirm-password" placeholder="Repetir Senha" required disabled={this.checkMode()} />
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="address" class="col-sm-2 col-form-label">Endereço</label>
-                            <div class="col">
-                                <select className="form-control" onChange={e => this.loadStates(e)} disabled={this.checkMode()}>
-                                    <option value={0}>País...</option>
-                                    {this.renderCountriesForComboBox()}
-                                </select>
-                            </div>
-                            <div className="col">
-                                <select className="form-control" onChange={e => this.loadCities(e)} disabled={this.checkMode()}>
-                                    <option value={0}>Estado...</option>
-                                    {this.renderStatesForComboBox()}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="city" class="col-sm-2 col-form-label">Cidade</label>
-                            <div class="col">
-                                <select className="form-control" onChange={e => this.updateFieldCity(e)} required disabled={this.checkMode()}>
-                                    <option value=''>Cidade...</option>
-                                    {this.renderCitiesForComboBox()}
-                                </select>
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="neighborhood" class="col-sm-2 col-form-label">Bairro</label>
-                            <div class="col">
-                                <input value={this.state.user.address.neighborhood} onChange={e => this.updateFieldNeighborhood(e)} type="text" class="form-control" id="neighborhood" placeholder="Bairro" required disabled={this.checkMode()} />
-                            </div>
-                        </div>
-                        <div class="form-group row">
-                            <label for="speciality" class="col-sm-2 col-form-label">Especialidades</label>
-                            <div class="col-sm-9">
-                                <select className="form-control" onChange={e => this.updateFieldSpecialities(e)} id="speciality" required disabled={this.checkMode()}>
-                                    <option value={0}>Selecione ...</option>
-                                    {this.renderSpecialitiesForComboBox()}
-                                </select>
-                            </div>
-                            <BtnGrayWithRadius label="+" click={this.addNewSpeciality} />
-                            <div className="col-2"></div>
-                            <div className="col-9">
-                                <small class="form-text text-muted ml-1">{this.renderSelectedSpecialities()}</small>
-                            </div>
-                        </div>
-                        <div class="form-group col-form-label">
-                            <label for="description">Descreva o que você sabe fazer:</label>
-                            <textarea value={this.state.user.description} onChange={e => this.updateFieldDescription(e)} class="form-control" id="description" rows="5" required disabled={this.checkMode()}></textarea>
-                        </div>
-                    </form>
-                    <div className="formulario-footer">
-                        <div><BtnBlueWithRadius label="Editar" style={'bg-edit'} click={this.edit} /></div>
-                        {
-                            this.state.mode === 'edit' ?
-                                <div className="formulario-footer-button"><BtnBlueWithRadius label="Salvar" click={this.save} /></div>
-                                : ''
-                        }
-                    </div>
 
-                </div>
-                <div className="area-foto-perfil mt-4">
-                    <div className="foto-perfil-header pl-4">
-                        <h5>Imagem de perfil</h5>
                     </div>
-                    <div className="foto-perfil-body">
-                        <div className="foto-perfil">
-                            <img src={this.state.directoryProfileImage || defaultProfileImage} className="img-perfil" height='100%' width='100%' />
+                    <div className="area-foto-perfil mt-4">
+                        <div className="foto-perfil-header pl-4">
+                            <h5>Imagem de perfil</h5>
                         </div>
-                    </div>
-                    <div className="foto-perfil-footer">
-                        <div>
-                            <div className="area-file" >
-                                <input hidden type="file" id="profile-image" name="profile-image" onChange={e => this.updateFieldProfileImage(e)} />
-                                <label for="profile-image" className="label-profile-image">Escolher Foto</label>
+                        <div className="foto-perfil-body">
+                            <div className="foto-perfil">
+                                <img src={this.state.directoryProfileImage || defaultProfileImage} className="img-perfil" height='100%' width='100%' />
                             </div>
                         </div>
-                    </div>
-                    <div className="informacoes-adicionais">
-                        <hr />
-                        <div>
-                            <div class="container">
-                                <div class="row mb-2 mt-4">
-                                    <div class="col">
-                                        Tipo de Usuário:
-                                    </div>
-                                    <div class="col">
-                                        {this.state.user.userType}
-                                    </div>
+                        <div className="foto-perfil-footer">
+                            <div>
+                                <div className="area-file" >
+                                    <input hidden type="file" id="profile-image" name="profile-image" onChange={e => this.updateFieldProfileImage(e)} />
+                                    <label for="profile-image" className="label-profile-image">Escolher Foto</label>
                                 </div>
-                                <div className="row mb-2">
-                                    <div class="col">
-                                        Pacote Atual:
+                            </div>
+                        </div>
+                        <div className="informacoes-adicionais">
+                            <hr />
+                            <div>
+                                <div class="container">
+                                    <div class="row mb-2 mt-4">
+                                        <div class="col">
+                                            Tipo de Usuário:
                                     </div>
-                                    <div class="col">
-                                        Free
+                                        <div class="col">
+                                            {this.state.user.userType}
+                                        </div>
                                     </div>
-                                </div>
-                                <div className="row mb-2">
-                                    <div class="col">
-                                        Dias restantes:
+                                    {
+                                        <div class="row mb-2">
+                                            <div className="col">
+                                                {`Serviços ${this.state.user.userType === 'trampeiro' ? 'Prestados' : 'Solicitados'}`}:
+                                        </div>
+                                            <div className="col">
+                                                {this.state.user.servicesProvidedRequested}
+                                            </div>
+                                        </div>
+                                    }
+                                    <div className="row mb-2">
+                                        <div class="col">
+                                            Pacote Atual:
                                     </div>
-                                    <div class="col">
-                                        {this.state.user.remainingPackageDays}
+                                        <div class="col">
+                                            Free
                                     </div>
-                                </div>
-                                <div className="row mb-2">
-                                    <div class="col">
-                                        <div className="area-curriculo">
-                                            Currículo:
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div class="col">
+                                            Dias restantes:
+                                    </div>
+                                        <div class="col">
+                                            {this.state.user.remainingPackageDays}
+                                        </div>
+                                    </div>
+                                    <div className="row mb-2">
+                                        <div class="col">
+                                            <div className="area-curriculo">
+                                                Currículo:
                                             <div className="curriculo-controles">
-                                                <a href={this.state.directoryCurriculum} target="blank">
-                                                    <BtnBlueWithRadius label="Visualizar" click={this.viewCurriculum}></BtnBlueWithRadius>
-                                                </a>
-                                                <input hidden type="file" id="curriculum" name="curriculum" onChange={e => this.updateFieldCurriculum(e)} />
-                                                <label for="curriculum" className="label-curriculum ml-2">Anexar</label>
+                                                    <a href={this.state.directoryCurriculum} target="blank">
+                                                        <BtnBlueWithRadius label="Visualizar" click={this.viewCurriculum}></BtnBlueWithRadius>
+                                                    </a>
+                                                    <input hidden type="file" id="curriculum" name="curriculum" onChange={e => this.updateFieldCurriculum(e)} />
+                                                    <label for="curriculum" className="label-curriculum ml-2">Anexar</label>
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
@@ -524,7 +550,7 @@ class PerfilProprio extends Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </>
         )
     }
 }

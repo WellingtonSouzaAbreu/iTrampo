@@ -2,6 +2,8 @@ module.exports = app => {
     const { existsOrError, notExistsOrError, equalsOrError } = app.api.validation
 
     const save = (req, res) => {
+        console.log(req.body)
+
         const interested = { ...req.body }
         if (req.params.id) interested.id = req.params.id
 
@@ -12,7 +14,7 @@ module.exports = app => {
             res.status(400).send(err)
         }
 
-        app.db('interested_service')
+        app.db('interested_service') // Verifica se já foi manifestado interesse
             .where({ serviceId: interested.serviceId })
             .where({ userId: interested.userId })
             .count('id')
@@ -69,22 +71,81 @@ module.exports = app => {
         return interestedInService
     }
 
-    return { save, getAlreadyInterested, get/* , remove */ }
+    const saveEvaluation = async (req, res) => {
+        const { idUser } = req.params
+        const { userId } = req.body // Userid é o usuário que está avaliando
+        const { idService } = req.params
+        const { evaluation } = req.body
+
+        const alreadyEvaluated = await app.db('evaluation')
+            .where({ userId: idUser })
+            .where({ serviceId: idService })
+            .count()
+            .first()
+            .then(count => count.count > 0 ? true : false)
+
+        if (alreadyEvaluated) return res.status(400).send('Este usuário já foi avaliado neste serviço!')
+
+        await app.db('evaluation')
+            .insert({ quality: evaluation.qualityStars, professionalism: evaluation.professionalismStars, deadline: evaluation.deadlineStars, comunication: evaluation.comunicationStars, userId: idUser, serviceId: idService })
+            .then(_ => {
+                incrementServicesProvidedRequested(userId) // Empregador
+                incrementServicesProvidedRequested(idUser) // Trampeiro
+                res.status(204).send()
+            })
+            .catch(err => res.status(500).send('Erro ao avaliar usuário!'))
+    }
+
+    const incrementServicesProvidedRequested = async (idUser) => {
+                    await app.db('users')
+            .select('servicesProvidedRequested')
+            .where({ id: idUser })
+            .first()
+            .then(async servicesProvidedRequested => {
+                await app.db('users')
+                    .update({ servicesProvidedRequested: servicesProvidedRequested.servicesProvidedRequested + 1})
+                    .where({ id: idUser })
+                    .then(_ => console.log('Services Requested incrementados ocm sucesso'))
+                    .catch(err => console.log(err))
+            })
+
+        /*    await app.db('users')
+               .update({ servicesProvidedRequested: servicesProvidedRequested })
+               .where({ id: idUser })
+               .then(_ => console.log('Services Requested incrementados ocm sucesso'))
+               .catch(err => console.log(err)) */
+    }
+
+    const removeInterested = async (req, res) => {
+        const { idUser } = req.params
+        const { idService } = req.params
+
+        await app.db('interested_service')
+            .where({ userId: idUser })
+            .where({ serviceId: idService })
+            .del()
+            .then(rowsDeleted => {
+                console.log('rowsDeleted: ' + rowsDeleted)
+                console.log('Interessado deletado com sucesso!')
+                res.status(200).send()
+            })
+            .catch(err => res.status(500).send('Erro ao deletar interessado!'))
+        res.send('Entrei')
+    }
+
+    removeInterestInService = async (req, res) => {
+        await app.db('interested_service')
+            .where({
+                serviceId: req.params.idService,
+                userId: req.params.idUser
+            })
+            .del()
+            .then(_ => {
+                console.log('Interesse removido com sucesso!')
+                res.status(200).send()
+            })
+            .catch(err => res.status.send(err))
+    }
+
+    return { save, getAlreadyInterested, get, saveEvaluation, removeInterested, removeInterestInService }
 }
-
-/* const remove = async (req, res) => {
-        try {
-            const rowsDeleted = await app.db('interested_service')
-                .where({ id: req.params.id }).del()
-
-            try {
-                existsOrError(rowsDeleted, 'Interessado no serviço não foi encontrado')
-            } catch (err) {
-                //
-            }
-
-            res.status(204).send()
-        } catch (err) {
-            res.status(500).send(msg)
-        }
-    } */

@@ -8,5 +8,11 @@ h1{
     margin-bottom: 0;
 }
 
+.paginador{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
 
 

@@ -7,9 +7,6 @@ import BtnBlueWithRadius from './../content/buttons/BtnBlueWithRadius.jsx'
 import './PerfilVisualizar.css'
 import defaultProfileImage from './../../assets/images/default-user-profile-image.jpg'
 
-import Viewer from '@phuocng/react-pdf-viewer';
-import '@phuocng/react-pdf-viewer/cjs/react-pdf-viewer.css';
-
 const initialState = {
     user: {
         name: 'a',
@@ -47,11 +44,14 @@ class PerfilVisualizar extends Component {
     }
 
     loadUser() {
-        axios.get(`${baseApiUrl}/users/preview/${this.props.match.params.id}`) // Param do header
+        axios.get(`${baseApiUrl}/users/preview/${this.props.match.params.id}`)
             .then(res => {
-                const directoryProfileImage = `${baseApiUrl}/profile-images/${res.data.profileImage}`
 
-                const directoryCurriculum = `${baseApiUrl}/curriculum/${res.data.curriculum}`
+                let directoryProfileImage
+                if (res.data.profileImage) directoryProfileImage = `${baseApiUrl}/profile-images/${res.data.profileImage}`
+
+                let directoryCurriculum
+                if (res.data.curriculum) directoryCurriculum = `${baseApiUrl}/curriculum/${res.data.curriculum}`
 
                 this.setState({ user: res.data, directoryProfileImage, directoryCurriculum })
             })
@@ -75,7 +75,7 @@ class PerfilVisualizar extends Component {
     }
 
     viewCurriculum() {
-        if (this.state.directoryCurriculum !== null) {
+        if (this.state.directoryCurriculum != null) {
             //Segue o fluxo do link
         } else {
             window.alert('Você não possui nenhum currículo cadastrado!')
@@ -86,50 +86,68 @@ class PerfilVisualizar extends Component {
         return (
             <div className='perfil-visualizar'>
                 <div className="container col-sm-8 border-right">
-                    <h1 className="mb-1">Perfil do Trampeiro</h1>
+                    <h1 className="mb-1">{`Perfil do ${this.state.user.userType === 'trampeiro' ? 'Trampeiro' : 'Empregador'}`}</h1>
                     <hr />
                     <div class="row mb-2">
-                        <div className="col-2 bold">Nome:</div>
+                        <div className="col-3 bold">Nome:</div>
                         <div className="col">{this.state.user.name}</div>
                     </div>
                     <div class="row mb-2">
-                        <div className="col-2 bold">Idade:</div>
+                        <div className="col-3 bold">Idade:</div>
                         <div className="col">{this.renderFormatedAge()}</div>
                     </div>
                     <div class="row mb-2">
-                        <div className="col-2 bold">Gênero:</div>
+                        <div className="col-3 bold">Gênero:</div>
                         <div className="col">{this.state.user.genre === 'M' ? 'Masculino' : 'Feminino'}</div>
                     </div>
+                    {
+                        this.state.user.userType === 'trampeiro' ?
+                            <div class="row mb-2">
+                                <div className="col-3 bold">Contatos:</div>
+                                <div className="col">{this.renderContacts()}</div>
+                            </div>
+                            : ''
+                    }
+
+
                     <div class="row mb-2">
-                        <div className="col-2 bold">Contatos:</div>
-                        <div className="col">{this.renderContacts()}</div>
-                    </div>
-                    <div class="row mb-2">
-                        <div className="col-2 bold">E-mail:</div>
+                        <div className="col-3 bold">E-mail:</div>
                         <div className="col">{this.state.user.email}</div>
                     </div>
                     <div class="row mb-2">
-                        <div className="col-2 bold">Endereço:</div>
+                        <div className="col-3 bold">Endereço:</div>
                         <div className="col">{`${this.state.user.address.city} - ${this.state.user.address.state}, ${this.state.user.address.country}`}</div>
                     </div>
                     <div class="row mb-2">
-                        <div className="col-2 bold">Bairro:</div>
+                        <div className="col-3 bold">Bairro:</div>
                         <div className="col">{this.state.user.address.neighborhood}</div>
                     </div>
                     <div class="row mb-2">
-                        <div className="col-2 bold">Especialidades:</div>
-                        <div className="col">{this.state.user.specialities.toString()}</div>
+                        <div className="col-3 bold">{`Serviços ${this.state.user.userType === 'trampeiro' ? 'Prestados' : 'Solicitados'}`}:</div>
+                        <div className="col">{this.state.user.servicesProvidedRequested}</div>
                     </div>
+                    {
+                        this.state.user.userType === 'trampeiro' ?
+                            <div class="row mb-2">
+                                <div className="col-3 bold">Especialidades:</div>
+                                <div className="col">{this.state.user.specialities.toString()}</div>
+                            </div>
+                            : ''
+                    }
+                    {
+                        this.state.user.userType === 'trampeiro' ?
+                            <div class="row mb-2">
+                                <div className="col-3 bold">Currículo:</div>
+                                <div className="col">
+                                    <a href={this.state.directoryCurriculum} target="blank">
+                                        <BtnBlueWithRadius label="Visualizar" click={this.viewCurriculum}></BtnBlueWithRadius>
+                                    </a>
+                                </div>
+                            </div>
+                            : ''
+                    }
                     <div class="row mb-2">
-                        <div className="col-2 bold">Currículo:</div>
-                        <div className="col">
-                            <a href={this.state.directoryCurriculum} target="blank">
-                                <BtnBlueWithRadius label="Visualizar" click={this.viewCurriculum}></BtnBlueWithRadius>
-                            </a>
-                        </div>
-                    </div>
-                    <div class="row mb-2">
-                        <div className="col-2 bold">Descrição:</div>
+                        <div className="col-3 bold">Descrição:</div>
                         <div className="col">{this.state.user.description}</div>
                     </div>
 
@@ -143,15 +161,6 @@ class PerfilVisualizar extends Component {
                             <img src={this.state.directoryProfileImage || defaultProfileImage} className="img-perfil" height='100%' width='100%' />
                         </div>
                     </div>
-                    <div className="foto-perfil-footer">
-                        <div>
-                            <div className="area-file">
-                                <input hidden type="file" id="profile-image" name="profile-image" onChange={e => this.updateFieldProfileImage(e)} />
-                                <label for="profile-image" className="label-profile-image">Escolher Foto</label>
-                            </div>
-                        </div>
-                    </div>
-                    <Viewer fileUrl="./anexo.pdf" />
                 </div>
             </div>
         )

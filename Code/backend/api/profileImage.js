@@ -19,7 +19,6 @@ module.exports = app => {
             if (err) {
                 return res.end('Ocorreu um Erro')
             }
-            console.log(req.file)
             console.log(req.params.idUser)
             let file = req.file
             let idUser = req.params.idUser
@@ -28,14 +27,15 @@ module.exports = app => {
             app.db('users')
                 .select('profileImage')
                 .where({ id: idUser })
+                .first()
                 .then(async profileImage => {
-                    if (profileImage != []) {
+                    // console.log(profileImage)
+                    if (profileImage != {}) {
+                        console.log(profileImage.profileImage)
                         console.log('Já existe uma foto cadastrada!')
-                        console.log(profileImage)
-                        profileImage = profileImage[0].profileImage
 
-                        fs.unlink(`${__dirname}/../profile-images/${profileImage}`, (err) => {
-                            if (err) res.status('Erro ao salvar foto do perfil')
+                        fs.unlink(`${__dirname}/../profile-images/${profileImage.profileImage}`, (err) => {
+                            if (err) console.log(err)   // res.status('Erro ao salvar foto do perfil')
                             console.log('Arquivo deletado!')
                         })
 
@@ -44,11 +44,12 @@ module.exports = app => {
                     }
                 })
                 .then(async _ => {
+                    console.log(req.file.fileName)
                     await app.db('users')
                         .where({ id: idUser })
                         .update({ profileImage: file.filename })
-                        .then(fileName => {
-                            console.log(fileName)
+                        .then(rowsAfected => {
+                            console.log(rowsAfected)
                             res.status(204).send() // End diz que finalizou o upload
                         })
                 })

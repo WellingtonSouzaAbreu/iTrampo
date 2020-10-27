@@ -22,11 +22,6 @@ module.exports = app => {
         const userSpecialitiesId = user.specialities
         delete user.specialities
 
-       /*  console.log(user)
-        console.log(userAddress)
-        console.log(userContacts)
-        console.log(userSpecialitiesId) */
-
         if (req.params.id) user.id = req.params.id // Usado para editar
 
         try {
@@ -35,7 +30,7 @@ module.exports = app => {
             existsOrError(user.description, 'Descrição não informada')
             existsOrError(user.password, 'Senha não informada')
             existsOrError(user.confirmPassword, 'Confirmação de senha não informada')
-            existsOrError(user.userType, 'Typo de usuário não informado')
+            existsOrError(user.userType, 'Tipo de usuário não informado')
             existsOrError(user.currentPackage, 'Pacote corrente não definido')
             existsOrError(user.genre, 'Gênero não definido')
             existsOrError(user.dateOfBirth, '')
@@ -57,11 +52,10 @@ module.exports = app => {
             return res.status(400).send(err)
         }
 
-        // user.password = encryptPassword(user.password)
+        user.password = encryptPassword(user.password)
         delete user.confirmPassword
 
         if (user.id) {
-            console.log(user.id)
             try {
                 await app.db('users')
                     .update(user)
@@ -107,31 +101,31 @@ module.exports = app => {
                     .returning('id')
                     .insert(user)
                     .then(idUser => {
-                        [userContacts.userId] = idUser
+                        [user.id] = idUser
                     })
                     .then(_ => console.log('Usuário cadastrado com sucesso!'))
 
                 userContacts.numbers.map(async number => {
                     await app.db('contacts')
-                        .insert({ number: number, userId: userContacts.userId })
+                        .insert({ number: number, userId: user.id })
                         .then(_ => console.log('Contatos cadastrados com sucesso'))
                 })
 
                 userSpecialitiesId.map(async specialityId => {
                     await app.db('user_specialities')
-                        .insert({ userId: userContacts.userId, specialityId: specialityId }) // TODO specialityId
+                        .insert({ userId: user.id, specialityId: specialityId }) // TODO specialityId
                         .then(rowCount => {
                             console.log('Especialidades cadastradas com sucesso')
-                            res.status(200).json(userContacts.userId)
+                            res.status(200).json(user.id)
                         })
                         .catch(err => res.status(500).send('Erro ao cadastrar especialidades'))
                 })
 
             } catch (err) {
                 await app.db('address').where({ id: user.addressId }).del()
-                await app.db('users').where({ id: userContacts.userId }).del()
-                await app.db('contacts').where({ userId: userContacts.userId }).del()
-                await app.db('user_specialities').where({ userId: userContacts.userId }).del()
+                await app.db('users').where({ id: user.id }).del()
+                await app.db('contacts').where({ userId: user.id }).del()
+                await app.db('user_specialities').where({ userId: user.id }).del()
                 console.log('Rollback devido à um erro!')
                 res.status(500).send('Erro ao cadastrar usuário! Algum dado não persistiu')
             }
@@ -147,9 +141,11 @@ module.exports = app => {
             .where({ id: idUser })
             .then(async user => {
                 [user] = user
+                delete user.password
                 let userWithAddress = await getAddress(user)
                 let userWithContacts = await getContacts(userWithAddress)
                 let userWithSpecialities = await getSpecialities(userWithContacts)
+                
                 res.status(200).send(userWithSpecialities)
             })
             .catch(err => res.status(500).send('Erro ao consultar usuário pelo Id!'))
@@ -196,7 +192,7 @@ module.exports = app => {
         idUser = req.params.id || 0
 
         await app.db('users')
-            .select('id', 'name', 'dateOfBirth', 'genre', 'email', 'curriculum', 'profileImage', 'description', 'addressId')
+            .select('id', 'name', 'dateOfBirth', 'genre', 'email', 'curriculum', 'profileImage', 'description', 'addressId', 'userType', 'servicesProvidedRequested')
             .where({ 'users.id': idUser })
             .then(async user => {
                 let userWithAddressPreview = await getAddressPreview(user)

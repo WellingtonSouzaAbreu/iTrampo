@@ -2,7 +2,7 @@ module.exports = app => {
 
     const get = (req, res) => {
         app.db('specialities')
-            .select('id','speciality')
+            .select('id', 'speciality')
             .then(specialities => {
                 res.send(specialities)
             })

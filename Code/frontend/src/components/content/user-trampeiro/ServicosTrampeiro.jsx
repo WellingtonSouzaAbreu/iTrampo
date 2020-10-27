@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import { Redirect } from 'react-router'
 import axios from 'axios'
 import { Table } from 'react-bootstrap'
 
@@ -11,6 +12,9 @@ const initialState = {
     limit: 0,
     pages: [],
     currentPage: 1,
+
+    redirectToService: false,
+    serviceClicked: null
 }
 
 class ServicosTrampeiro extends Component {
@@ -21,6 +25,7 @@ class ServicosTrampeiro extends Component {
         this.loadServicesOfInterest = this.loadServicesOfInterest.bind(this)
         this.previousPage = this.previousPage.bind(this)
         this.nextPage = this.nextPage.bind(this)
+        this.deleteInterestInService = this.deleteInterestInService.bind(this)
     }
 
     componentDidMount() {
@@ -28,8 +33,12 @@ class ServicosTrampeiro extends Component {
     }
 
     async loadServicesOfInterest() {
-        await axios.get(`${baseApiUrl}/services/services-interested-by-user?page=${this.state.currentPage}&userId=1`)
+        const idUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : ''
+        await axios.get(`${baseApiUrl}/services/services-interested-by-user?page=${this.state.currentPage}&userId=${idUser}`)
             .then(res => {
+                let selectedSpecialitiesLabels = res.data.data.selectedSpecialitiesLabels
+                delete res.data.data.selectedSpecialitiesLabels
+
                 this.setState({
                     servicesOfInterest: res.data.data,
                     count: res.data.count,
@@ -47,9 +56,10 @@ class ServicosTrampeiro extends Component {
                     <tr>
                         <th>Data</th>
                         <th>Serviço</th>
-                        <th>Especialidade</th>
+                        <th>Competências</th>
                         <th>Valor</th>
                         <th>Local</th>
+                        <th>Ações</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -63,23 +73,44 @@ class ServicosTrampeiro extends Component {
         return (
             this.state.servicesOfInterest.map((service) => {
                 return (
-                    <tr key={service.id} onClick={_ => this.openService(service.id)}>
-                        <td>{service.postDate}</td>
-                        <td>{service.serviceTitle}</td>
-                        <td>{service.specialities.toString()}</td>
-                        <td>{service.value}</td>
-                        <td>{`${service.address.city} - ${service.address.state}`}</td>
+                    <tr key={service.id}>
+                        <td onClick={_ => this.openService(service.id)}>{this.renderFormatedPostDate(service.postDate)}</td>
+                        <td onClick={_ => this.openService(service.id)}>{service.serviceTitle}</td>
+                        <td onClick={_ => this.openService(service.id)}>{service.selectedSpecialitiesLabels.toString()}</td>
+                        <td onClick={_ => this.openService(service.id)}>{service.value}</td>
+                        <td onClick={_ => this.openService(service.id)}>{`${service.address.city} - ${service.address.state}`}</td>
+                        <td><button className="btn btn-danger" onClick={e => this.deleteInterestInService(e, service.id)}><i className="fa fa-trash"></i></button></td>
                     </tr>
                 )
             })
         )
     }
 
-    openService(serviceIid) {
-        let url = window.location.href.substring(0, 21)
-        url += `/detalhes-servico-trampeiro/${serviceIid}`
-        window.location.href = url
+    openService(idService) {
+        this.setState({
+            serviceClicked: idService,
+            redirectToService: true
+        })
     }
+
+    renderFormatedPostDate(postDate) {
+        let dateFormated = postDate.split('T')[0]
+        dateFormated = dateFormated.split('-')
+        dateFormated = dateFormated.reverse().toString().replace(/,/g, '/')
+
+        return `${dateFormated}`
+    }
+
+    async deleteInterestInService(e, idService) {
+        const idUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : ''
+        if (e) e.preventDefault()
+        await axios.delete(`${baseApiUrl}/interested-service/del-interest/${idService}/${idUser}`)
+            .then(res => window.alert('Serviço deletado com sucesso!'))
+            .catch(err => window.alert(err.response.data))
+
+        this.loadServicesOfInterest()
+    }
+
 
     configurePager() {
         let numberOfPages = Math.ceil(this.state.count / this.state.limit)
@@ -93,6 +124,7 @@ class ServicosTrampeiro extends Component {
     showPager() {
         return (
             <>
+                {this.state.redirectToService ? <Redirect to={`/detalhes-servico/${this.state.serviceClicked}`} /> : ''}
                 <BtnGrayWithRadius click={this.previousPage} label={'<<'} />
                 <ul className="pagination mb-0">
                     {this.state.pages.map((page) => {
@@ -133,19 +165,21 @@ class ServicosTrampeiro extends Component {
 
     render() {
         return (
-            <div className='servicos-trampeiro'>
-                <div className="header-servicos-trampeiro">
-                    <h1 className="ml-3">Interesses</h1>
-                </div>
-                <div className="body-servicos-trampeiro">
-                    {this.renderTable()}
-                </div>
-                <div className="footer-servicos-trampeiro">
-                    <div className="paginador">
-                        {this.showPager()}
+            <>
+                <div className='servicos-trampeiro'>
+                    <div className="header-servicos-trampeiro">
+                        <h1 className="ml-3">Interesses</h1>
+                    </div>
+                    <div className="body-servicos-trampeiro">
+                        {this.renderTable()}
+                    </div>
+                    <div className="footer-servicos-trampeiro">
+                        <div className="paginador">
+                            {this.showPager()}
+                        </div>
                     </div>
                 </div>
-            </div>
+            </>
         )
     }
 }

@@ -19,6 +19,13 @@
 
 .stars{
     /* color: #299cdf; */
+    cursor: pointer;
+    font-size: 1.2em;
+    margin-left: 5px;
+}
+
+.stars:hover{
+    color: #299cdf;
 }
 
 .aberto {

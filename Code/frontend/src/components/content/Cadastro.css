@@ -1,3 +1,9 @@
+.selecionar-tipo-usuario{
+    display: flex;
+    justify-content: space-between;
+    padding: 0px 80px;
+}
+
 .cadastro {
     display: flex;
     justify-content: space-between;

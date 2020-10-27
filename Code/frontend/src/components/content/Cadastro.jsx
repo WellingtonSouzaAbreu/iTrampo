@@ -1,5 +1,7 @@
 import React, { Component } from 'react'
 import axios from 'axios'
+import { Button, Collapse } from 'react-bootstrap'
+import Modal from 'react-bootstrap/Modal'
 
 import baseApiUrl from './../../global.js'
 
@@ -10,6 +12,11 @@ import './Cadastro.css'
 import defaultProfileImage from './../../assets/images/default-user-profile-image.jpg'
 
 const initialState = {
+    modalVisibility: false,
+    collapseState: false,
+    employerDescription: 'asd  sdsd sd ssdsdsdsd sds dsdsd  dss',
+    trampDescription: 'kkkkkkkk khh jjhhh jhhhhj kkkjh',
+
     termsAndConditions: true, // TODO
     countries: [],
     states: [],
@@ -25,7 +32,7 @@ const initialState = {
         description: 'Keilinha',
         password: 123,
         confirmPassword: 123,
-        userType: 'Empregador',  //TODO A definir
+        userType: '',
         currentPackage: 'Free',  // TODO A definir
         remainingPackageDays: 100, // TODO A definir
         genre: 'M',
@@ -46,14 +53,88 @@ class Cadastro extends Component {
         super(props)
         this.state = { ...initialState }
 
+        this.hideUserTypeModal = this.hideUserTypeModal.bind(this)
         this.addNewContact = this.addNewContact.bind(this)
         this.addNewSpeciality = this.addNewSpeciality.bind(this)
         this.register = this.register.bind(this)
     }
 
     componentDidMount() {
+        this.showUserTypeModal()
         this.loadCountries()
         this.loadSpecialities()
+    }
+
+    selectUserTypeModal() {
+        return (
+            <Modal
+                show={this.state.modalVisibility}
+                onHide={this.hideUserTypeModal}
+                backdrop="static"
+                keyboard={false}
+            >
+                <Modal.Header>
+                    <Modal.Title>Selecione o tipo de usuário</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    Dúvidas?
+                    Clique em uma opção para saber mais
+                    <div className="selecionar-tipo-usuario mt-4 mb-3">
+                        <Button
+                            variant={`${this.state.user.userType !== 'empregador' ? 'outline-' : ''}success`}
+                            onClick={_ => this.updateFieldUserType('empregador')}
+                            aria-controls="info-user-type"
+                            aria-expanded={this.state.collapseState}
+                        >
+                            Empregador
+                        </Button>
+                        <Button
+                            variant={`${this.state.user.userType !== 'trampeiro' ? 'outline-' : ''}success`}
+                            onClick={_ => this.updateFieldUserType('trampeiro')}
+                            aria-controls="info-user-type"
+                            aria-expanded={this.state.collapseState}
+                        >
+                            Trampeiro
+                        </Button>
+                    </div>
+                    <div className="p-3">
+                        <Collapse in={this.state.collapseState}>
+                            <div id="info-user-type">
+                                {this.state.user.userType === 'trampeiro' ? this.state.trampDescription : this.state.employerDescription}
+                            </div>
+                        </Collapse>
+                    </div>
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="primary" onClick={this.hideUserTypeModal}>Continuar</Button>
+                </Modal.Footer>
+            </Modal >
+        )
+    }
+
+    showUserTypeModal() {
+        this.setState({ modalVisibility: true })
+    }
+
+    hideUserTypeModal() {
+        if(this.state.user.userType !== ''){
+            this.setState({ modalVisibility: false })
+        }else{
+            window.alert('Por favor, selecione uma opção para continuar.')
+        }
+    }
+
+    updateFieldUserType(userType) {
+        if(userType === this.state.user.userType || this.state.user.userType === '') this.toggleCollapseState() // Se der true é porque foi clicado no mesmo botão. Se for diferente só encolhe o collapse
+
+        let user = { ...this.state.user }
+        user.userType = userType
+        this.setState({ user })
+
+    }
+
+    toggleCollapseState() {
+        this.setState({ collapseState: !this.state.collapseState })
     }
 
     updateFieldName(e) {
@@ -288,6 +369,8 @@ class Cadastro extends Component {
     render() {
         return (
             <div className='cadastro'>
+                {this.state.modalVisibility ? this.selectUserTypeModal() : ''}
+
                 <div className="formulario col-sm-8 border-right">
                     <h1 className="mb-4">Cadastre-se</h1>
                     <form>

@@ -5,6 +5,7 @@ import { Redirect } from 'react-router'
 
 import { changeNavVisibility } from '../../store/actions/nav.js'
 import { setUserData } from '../../store/actions/user.js'
+import changeDropdownVisibility from './../../store/actions/dropdown.js'
 
 import baseApiUrl from './../../global.js'
 import BtnGrayWithRadius from './buttons/BtnGrayWithRadius'
@@ -33,8 +34,9 @@ class Login extends Component {
         this.login = this.login.bind(this)
     }
 
-    componentDidMount() {
+    componentWillMount() {
         this.props.changeMenuVisibility(false)
+        this.props.setDropdownVisibility(false)
     }
 
     updateFieldEmail(e) {
@@ -58,8 +60,8 @@ class Login extends Component {
                 this.props.setUserInStore(user)
 
                 setTimeout(() => {
-
                     this.props.changeMenuVisibility(true)
+                    this.props.setDropdownVisibility(true)
                     this.redirectToFeed()
                 }, 1000)
             })
@@ -127,6 +129,10 @@ function mapDispatchToProp(dispatch) {
         },
         setUserInStore(user) {
             const action = setUserData(user)
+            dispatch(action)
+        },
+        setDropdownVisibility(visibility) {
+            const action = changeDropdownVisibility(visibility)
             dispatch(action)
         }
     }

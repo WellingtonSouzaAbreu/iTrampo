@@ -38,6 +38,7 @@ class Feed extends Component {
     }
 
     componentDidMount() {
+        axios.defaults.headers.common['Authorization'] = localStorage.getItem('userData') ? `bearer ${JSON.parse(localStorage.getItem('userData')).token}` : '';
         this.loadServices()
         this.getSpecialitiesForComboBox()
     }
@@ -260,7 +261,5 @@ class Feed extends Component {
         )
     }
 }
-
-
 
 export default Feed

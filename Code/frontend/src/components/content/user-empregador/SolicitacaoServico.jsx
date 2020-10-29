@@ -44,7 +44,7 @@ class SolicitacaoServico extends Component {
 
     async componentDidMount() {
         await this.setMode()
-        await this.setUserId()
+        await this.getIdUserFromToken()
         if (this.state.mode === 'edit') this.loadServiceToEdit()
         await this.loadCountries()
         await this.loadSpecialities()
@@ -54,10 +54,15 @@ class SolicitacaoServico extends Component {
         if (this.props.match.params.id) this.setState({ mode: 'edit' })
     }
 
-    setUserId() {
-        let { service } = this.state
-        service.userId = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : ''
-        this.setState({ service })
+    async getIdUserFromToken() {
+        await axios.get(`${baseApiUrl}/extract-from-token?dataType=id`)
+            .then(res => {
+                let {service} = this.state
+                service.userId = res.data
+                window.alert(res.data)
+                this.setState({ service })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
     async loadServiceToEdit() {

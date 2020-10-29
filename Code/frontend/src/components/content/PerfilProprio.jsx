@@ -61,14 +61,25 @@ class PerfilProprio extends Component {
         this.save = this.save.bind(this)
     }
 
-    componentDidMount() {
-        this.loadUser()
-        this.loadCountries()
-        this.loadSpecialities()
+    async componentWillMount() {
+        await this.getIdUserFromToken()
+        await this.loadUser()
+        await this.loadCountries()
+        await this.loadSpecialities()
+    }
+
+    async getIdUserFromToken() {
+        await axios.get(`${baseApiUrl}/extract-from-token?dataType=id`)
+            .then(res => {
+                let { user } = this.state
+                user.id = res.data
+                this.setState({ user })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
     async loadUser() {
-        const idUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : ''
+        const idUser = this.state.user.id
 
         await axios.get(`${baseApiUrl}/users/${idUser}`)
             .then(res => {
@@ -325,18 +336,17 @@ class PerfilProprio extends Component {
         await axios.put(`${baseApiUrl}/users/${this.state.user.id}`, this.state.user)
             .then(async res => {
                 let idUser = res.data
-                // window.alert('Perfil atualizado com sucesso')
                 this.showToast('Perfil atualizado com sucesso!', 'success')
                 await this.registerProfileImage(idUser)
                 await this.registerCurriculum(idUser)
                 await this.loadUser()
                 this.setState({ mode: 'save' })
             })
-            .catch(err => this.showToast(err.response.data,'error'))
+            .catch(err => this.showToast(err.response.data, 'error'))
     }
 
     showToast(toastMessage, toastType) {
-        this.setState({ toastMessage: toastMessage, toastIsVisible: true , toastType: toastType})
+        this.setState({ toastMessage: toastMessage, toastIsVisible: true, toastType: toastType })
         setTimeout(() => this.setState({ toastIsVisible: false }), 4000)
     }
 
@@ -502,7 +512,9 @@ class PerfilProprio extends Component {
                                             Tipo de Usuário:
                                     </div>
                                         <div class="col">
-                                            {this.state.user.userType}
+                                            {this.state.user.userType === 'trampeiro'
+                                                ? this.state.user.userType.replace('t', 'T')
+                                                : this.state.user.userType.replace('e', 'E')}
                                         </div>
                                     </div>
                                     {

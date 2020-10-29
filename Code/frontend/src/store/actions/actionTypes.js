@@ -1,1 +1,2 @@
 export const NAV_VISIBILITY = 'NAV_VISIBILITY'
+export const USER_DATA = 'USER_DATA'

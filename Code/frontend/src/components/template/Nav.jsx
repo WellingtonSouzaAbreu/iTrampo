@@ -1,6 +1,9 @@
 import React, { Component } from 'react'
+import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
+
+import baseApiUrl from './../../global.js'
 
 import './Nav.css'
 
@@ -8,7 +11,9 @@ const initialState = {
     selectedFeed: true,
     selectedServices: false,
     selectedHowItWorks: false,
-    selectedProfile: false
+    selectedProfile: false,
+
+    userType: null
 }
 class Nav extends Component {
     constructor(props) {
@@ -16,13 +21,16 @@ class Nav extends Component {
         this.state = { ...initialState }
     }
 
-    componentDidMount() {
-        this.setUserType()
-        window.alert(this.props.navVisibility)
+    componentWillMount() {
+        this.getUserTypeFromToken()
     }
 
-    setUserType() {
-        if (JSON.parse(localStorage.getItem('userData'))) this.setState({ userType: `${JSON.parse(localStorage.getItem('userData')).userType}` })
+    async getUserTypeFromToken() {
+        const userType = await axios.get(`${baseApiUrl}/extract-from-token?dataType=userType`)
+            .then(res => {
+                this.setState({ userType: res.data })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
     selectNavItem(navItem) {
@@ -30,6 +38,8 @@ class Nav extends Component {
         state.selectedFeed = false
         state[navItem] = true
         this.setState({ ...state })
+
+        this.getUserTypeFromToken()
     }
 
     render() {
@@ -57,9 +67,9 @@ class Nav extends Component {
 }
 
 function mapStateToProps(state) {
-    console.log(state)
     return {
-        navVisibility: state.nav.navVisibility
+        navVisibility: state.nav.navVisibility,
+        user: state.user.user
     }
 }
 

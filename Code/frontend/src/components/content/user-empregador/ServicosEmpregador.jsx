@@ -14,6 +14,7 @@ import './ServicosEmpregador.css'
 import BtnBlueWithRadius from './../buttons/BtnBlueWithRadius.jsx'
 
 const initialState = {
+    idUser: null,
     servicesSummarized: [],
     count: 0,
     limit: 0,
@@ -37,13 +38,23 @@ class ServicosEmpregador extends Component {
         this.deleteService = this.deleteService.bind(this)
     }
 
-    componentDidMount() {
-        this.loadServices()
+    async componentDidMount() {
+        await this.getIdUserFromToken()
+        await this.loadServices()
+    }
+
+    async getIdUserFromToken() {
+        await axios.get(`${baseApiUrl}/extract-from-token?dataType=id`)
+            .then(res => {
+                this.setState({ idUser: res.data })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
     async loadServices(e) {
         if (e) e.preventDefault()
-        await axios.get(`${baseApiUrl}/services/employer/${`${JSON.parse(localStorage.getItem('userData')).id}`}?page=${this.state.currentPage}`)
+
+        await axios.get(`${baseApiUrl}/services/employer/${this.state.idUser}?page=${this.state.currentPage}`)
             .then(res => {
                 let selectedSpecialitiesLabels = res.data.selectedSpecialitiesLabels
                 delete res.data.selectedSpecialitiesLabels

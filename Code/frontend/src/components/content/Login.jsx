@@ -1,9 +1,10 @@
 import React, { Component } from 'react'
 import axios from 'axios'
-import { connect} from 'react-redux'
+import { connect } from 'react-redux'
 import { Redirect } from 'react-router'
 
 import { changeNavVisibility } from '../../store/actions/nav.js'
+import { setUserData } from '../../store/actions/user.js'
 
 import baseApiUrl from './../../global.js'
 import BtnGrayWithRadius from './buttons/BtnGrayWithRadius'
@@ -32,6 +33,10 @@ class Login extends Component {
         this.login = this.login.bind(this)
     }
 
+    componentDidMount() {
+        this.props.changeMenuVisibility(false)
+    }
+
     updateFieldEmail(e) {
         this.setState({ email: e.target.value })
     }
@@ -45,18 +50,25 @@ class Login extends Component {
 
         await axios.post(`${baseApiUrl}/signin`, this.state)
             .then(async res => {
-                this.showToast('Login realizado com sucesso...', 'success')
-                localStorage.setItem('userData', JSON.stringify(res.data))
+                let user = res.data
+                localStorage.removeItem('userData')
+                localStorage.setItem('userData', JSON.stringify(user))
 
-                this.props.changeMenuVisibility(true)
-                this.redirectToFeed()
+                this.showToast('Login realizado com sucesso...', 'success')
+                this.props.setUserInStore(user)
+
+                setTimeout(() => {
+
+                    this.props.changeMenuVisibility(true)
+                    this.redirectToFeed()
+                }, 1000)
             })
             .catch(err => this.showToast(err.response.data, 'error'))
     }
 
     showToast(toastMessage, toastType) {
         this.setState({ toastMessage: toastMessage, toastIsVisible: true, toastType: toastType })
-        setTimeout(() => this.setState({ toastIsVisible: false }), 2000)
+        setTimeout(() => this.setState({ toastIsVisible: false }), 5000)
     }
 
     redirectToFeed() {
@@ -111,6 +123,10 @@ function mapDispatchToProp(dispatch) {
     return {
         changeMenuVisibility(visibility) {
             const action = changeNavVisibility(visibility)
+            dispatch(action)
+        },
+        setUserInStore(user) {
+            const action = setUserData(user)
             dispatch(action)
         }
     }

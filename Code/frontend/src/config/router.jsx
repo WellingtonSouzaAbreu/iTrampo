@@ -28,7 +28,5 @@ export default props =>
         <Route exact path="/detalhes-servico/:id" component={DetalhesServico} />
         <Route exact path="/servicos-empregador" component={ServicosEmpregador} />
         <Route exact path="/perfil-visualizar/:id" component={PerfilVisualizar} />
-
-
         <Redirect from="*" to="/login" />
     </Switch>

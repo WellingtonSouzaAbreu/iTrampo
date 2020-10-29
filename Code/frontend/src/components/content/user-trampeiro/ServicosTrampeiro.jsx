@@ -7,6 +7,7 @@ import baseApiUrl from '../../../global'
 import BtnGrayWithRadius from './../buttons/BtnGrayWithRadius.jsx'
 
 const initialState = {
+    idUser: null,
     servicesOfInterest: [],
     count: 0,
     limit: 0,
@@ -29,7 +30,16 @@ class ServicosTrampeiro extends Component {
     }
 
     componentDidMount() {
+        this.getIdUserFromToken()
         this.loadServicesOfInterest()
+    }
+
+    async getIdUserFromToken() {
+        await axios.get(`${baseApiUrl}/extract-from-token?dataType=id`)
+            .then(res => {
+                this.setState({ idUser: res.data })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
     async loadServicesOfInterest() {
@@ -102,7 +112,8 @@ class ServicosTrampeiro extends Component {
     }
 
     async deleteInterestInService(e, idService) {
-        const idUser = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : ''
+        const idUser = this.state.idUser
+        window.alert(idUser)
         if (e) e.preventDefault()
         await axios.delete(`${baseApiUrl}/interested-service/del-interest/${idService}/${idUser}`)
             .then(res => window.alert('Serviço deletado com sucesso!'))
@@ -110,7 +121,6 @@ class ServicosTrampeiro extends Component {
 
         this.loadServicesOfInterest()
     }
-
 
     configurePager() {
         let numberOfPages = Math.ceil(this.state.count / this.state.limit)

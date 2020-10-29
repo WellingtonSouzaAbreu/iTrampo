@@ -1,7 +1,7 @@
 .header {
     height: 17vh;
     background: linear-gradient(to right, #299cdf, #40B9FF);
-    box-shadow: 3px 3px 1px black;
+    box-shadow: 1px 1px 5px black;
     display: flex;
     justify-content: space-between;
 }

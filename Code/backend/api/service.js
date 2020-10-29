@@ -84,7 +84,7 @@ module.exports = app => {
                         [service.id] = idService
                         console.log('Serviço cadastrado com sucesso!')
                     })
-                    .catch(err => res.status(500).send(err))
+                    .catch(err => res.status(500).send('Erro ao cadastrar serviço'))
 
                 await serviceSpecialitiesId.map(async specialityId => {
                     await app.db('skills')

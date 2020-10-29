@@ -49,20 +49,28 @@ class DetalhesServicoTrampeiro extends Component {
     }
 
     async componentDidMount() {
-        this.setUserTypeFromLocalStorage()
-        this.setIdUserFromLocalStorage()
+        await this.getIdUserFromToken()
+        await this.getUserTypeFromToken()
         await this.loadService()
         await this.getAlreadyInterested()
         await this.loadInterested()
         this.hideEvaluationModal = this.hideEvaluationModal.bind(this)
     }
 
-    setUserTypeFromLocalStorage() {
-        this.setState({ userType: `${JSON.parse(localStorage.getItem('userData')).userType}` })
+    async getIdUserFromToken() {
+        await axios.get(`${baseApiUrl}/extract-from-token?dataType=id`)
+            .then(res => {
+                this.setState({ idUser: res.data })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
-    setIdUserFromLocalStorage() {
-        this.setState({ idUser: JSON.parse(localStorage.getItem('userData')).id })
+    async getUserTypeFromToken() {
+        await axios.get(`${baseApiUrl}/extract-from-token?dataType=userType`)
+            .then(res => {
+                this.setState({ userType: res.data })
+            })
+            .catch(err => window.alert('Erro: Por favor faça login novamente'))
     }
 
     async loadService() {
@@ -76,7 +84,7 @@ class DetalhesServicoTrampeiro extends Component {
     }
 
     async getAlreadyInterested() { // Aqui vai o id do usuário
-        await axios.post(`${baseApiUrl}/interested-service/already-interested`, { userId: JSON.parse(localStorage.getItem('userData')).id, serviceId: this.state.service.id })
+        await axios.post(`${baseApiUrl}/interested-service/already-interested`, { userId: this.state.idUser, serviceId: this.state.service.id })
             .then(res => {
                 this.setState({ interested: res.data })
             })
@@ -89,7 +97,7 @@ class DetalhesServicoTrampeiro extends Component {
 
     async expressInterest(e) {
         if (e) e.preventDefault()
-        await axios.post(`${baseApiUrl}/interested-service/`, { userId: JSON.parse(localStorage.getItem('userData')).id, serviceId: this.state.service.id })
+        await axios.post(`${baseApiUrl}/interested-service/`, { userId: this.state.idUser, serviceId: this.state.service.id })
             .then(res => console.log(res.data))
             .catch(err => window.alert(err.response.data))
 
@@ -393,7 +401,7 @@ class DetalhesServicoTrampeiro extends Component {
                     </div>
                 </div>
                 <hr />
-                {this.state.userType === 'empregador' && this.state.idUser == this.state.service.user.id? <h2 className="ml-3"> Interessados</h2> : ''}
+                {this.state.userType === 'empregador' && this.state.idUser == this.state.service.user.id ? <h2 className="ml-3"> Interessados</h2> : ''}
                 <div className="detalhes-footer">
                     {this.renderFooter()}
                 </div>

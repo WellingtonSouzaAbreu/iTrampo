@@ -1,9 +1,11 @@
 import { createStore, combineReducers } from 'redux'
 
 import navReducer from './reducers/navReducer.js'
+import userReducer from './reducers/userReducer.js'
 
 const reducers = combineReducers({
-    nav: navReducer
+    nav: navReducer,
+    user: userReducer
 })
 
 function storeConfig() {

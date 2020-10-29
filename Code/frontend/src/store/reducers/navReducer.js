@@ -7,7 +7,7 @@ const initialState={
 export default function(state = initialState, action){
     switch(action.type){
         case NAV_VISIBILITY:
-            window.alert('Trocou a visibilidade para ' + action.payload)
+            // window.alert('Trocou a visibilidade para ' + action.payload)
             return{
                 ...state,
                 navVisibility: action.payload

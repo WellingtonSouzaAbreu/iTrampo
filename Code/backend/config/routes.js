@@ -33,7 +33,6 @@ module.exports = app => {
         .all(app.config.passport.authenticate())
         .post(app.api.interested.getAlreadyInterested)
 
-
     app.route('/interested-service')
         .all(app.config.passport.authenticate())
         .post(app.api.interested.save)
@@ -79,4 +78,7 @@ module.exports = app => {
         .all(app.config.passport.authenticate())
         .post(app.api.curriculum.save)
 
+    app.route('/extract-from-token')
+        .all(app.config.passport.authenticate())
+        .get(app.api.token.extractFromToken)
 } 

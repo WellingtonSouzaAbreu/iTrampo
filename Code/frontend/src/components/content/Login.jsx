@@ -5,7 +5,9 @@ import { Redirect } from 'react-router'
 
 import { changeNavVisibility } from '../../store/actions/nav.js'
 import { setUserData } from '../../store/actions/user.js'
-import changeDropdownVisibility from './../../store/actions/dropdown.js'
+import { changeDropdownVisibility } from '../../store/actions/userDropdown.js'
+import { setHeaderItemsVisibility } from '../../store/actions/headerItems.js'
+
 
 import baseApiUrl from './../../global.js'
 import BtnGrayWithRadius from './buttons/BtnGrayWithRadius'
@@ -36,7 +38,8 @@ class Login extends Component {
 
     componentWillMount() {
         this.props.changeMenuVisibility(false)
-        this.props.setDropdownVisibility(false)
+        this.props.setUserDropdownVisibility(false)
+        this.props.changeHeaderItemsVisibility(true)
     }
 
     updateFieldEmail(e) {
@@ -61,7 +64,7 @@ class Login extends Component {
 
                 setTimeout(() => {
                     this.props.changeMenuVisibility(true)
-                    this.props.setDropdownVisibility(true)
+                    this.props.setUserDropdownVisibility(true)
                     this.redirectToFeed()
                 }, 1000)
             })
@@ -131,8 +134,12 @@ function mapDispatchToProp(dispatch) {
             const action = setUserData(user)
             dispatch(action)
         },
-        setDropdownVisibility(visibility) {
+        setUserDropdownVisibility(visibility) {
             const action = changeDropdownVisibility(visibility)
+            dispatch(action)
+        },
+        changeHeaderItemsVisibility(visibility) {
+            const action = setHeaderItemsVisibility(visibility)
             dispatch(action)
         }
     }

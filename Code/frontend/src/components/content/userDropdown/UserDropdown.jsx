@@ -14,7 +14,7 @@ function UserDropdown(props) {
     return (
         <div className="user-dropdown">
             <div className="user-button">
-                <span className="d-none d-sm-block">{'Wellington Souza Abreu'}</span>
+                <span className="d-none d-sm-block">{props.user.name}</span>
                 <i className="fa fa-angle-down ml-2"></i>
             </div>
             <div className="user-dropdown-content" onClick={e => logout()}>
@@ -24,4 +24,10 @@ function UserDropdown(props) {
     )
 }
 
-export default UserDropdown
+function mapStateToProps(state){
+    return{
+        user: state.user.user
+    }
+}
+
+export default connect(mapStateToProps)(UserDropdown)

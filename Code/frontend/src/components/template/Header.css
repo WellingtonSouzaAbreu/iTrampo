@@ -1,7 +1,7 @@
 .header {
     height: 17vh;
     background: linear-gradient(to right, #299cdf, #40B9FF);
-    box-shadow: 1px 1px 5px black;
+    box-shadow: 1px 1px 8px black;
     display: flex;
     justify-content: space-between;
 }
@@ -13,9 +13,6 @@
     font-size: 1.3em;
 }
 
-/* .logo img{
-
-} */
 
 .bt-cadastro {
     margin-right: 40px;

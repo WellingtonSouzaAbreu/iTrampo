@@ -1,18 +1,18 @@
 import { defineState } from 'redux-localstore'
-import { NAV_VISIBILITY } from '../actions/actionTypes.js'
+import { USER_DROPDOWN_VISIBILITY } from '../actions/actionTypes.js'
 
 const defaultState = {
-    navVisibility: false
+    dropdownVisibility: false
 }
 
-const initialState = defineState(defaultState)('nav')
+const initialState = defineState(defaultState)('userDropdown')
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case NAV_VISIBILITY:
+        case USER_DROPDOWN_VISIBILITY:
             return {
                 ...state,
-                navVisibility: action.payload
+                dropdownVisibility: action.payload
             }
         default:
             return state

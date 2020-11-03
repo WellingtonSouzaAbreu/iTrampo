@@ -1,18 +1,18 @@
 import { defineState } from 'redux-localstore'
-import { NAV_VISIBILITY } from '../actions/actionTypes.js'
+import { HEADER_ITEMS } from '../actions/actionTypes.js'
 
 const defaultState = {
-    navVisibility: false
+    visibility: true
 }
 
-const initialState = defineState(defaultState)('nav')
+const initialState = defineState(defaultState)('headerItems')
 
 export default function (state = initialState, action) {
     switch (action.type) {
-        case NAV_VISIBILITY:
+        case HEADER_ITEMS:
             return {
                 ...state,
-                navVisibility: action.payload
+                visibility: action.payload
             }
         default:
             return state

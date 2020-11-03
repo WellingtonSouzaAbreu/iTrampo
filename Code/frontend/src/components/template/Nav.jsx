@@ -3,16 +3,13 @@ import axios from 'axios'
 import { Link } from 'react-router-dom'
 import { connect } from 'react-redux'
 
+import { setMenuSelections } from './../../store/actions/menuSelections.js'
+
 import baseApiUrl from './../../global.js'
 
 import './Nav.css'
 
 const initialState = {
-    selectedFeed: true,
-    selectedServices: false,
-    selectedHowItWorks: false,
-    selectedProfile: false,
-
     userType: null
 }
 class Nav extends Component {
@@ -30,16 +27,21 @@ class Nav extends Component {
             .then(res => {
                 this.setState({ userType: res.data })
             })
-            .catch(err => window.alert('Erro: Por favor faça login novamente'))
+            .catch(err => window.alert(err.response.data)) // Redirecionar para login
     }
 
     selectNavItem(navItem) {
-        let state = { ...initialState }
-        state.selectedFeed = false
-        state[navItem] = true
-        this.setState({ ...state })
-
         this.getUserTypeFromToken()
+        let menuSelections = { ...this.props.menuSelections }
+
+        menuSelections.selectedFeed = false
+        menuSelections.selectedServices = false
+        menuSelections.selectedHowItWorks = false
+        menuSelections.selectedProfile = false
+
+        menuSelections[navItem] = true
+
+        this.props.changeMenuSelections(menuSelections) // Redux
     }
 
     render() {
@@ -47,16 +49,16 @@ class Nav extends Component {
             <>
                 <nav className={`${this.props.navVisibility ? '' : 'hide-nav'}`}>
                     <div className="nav-items">
-                        <div className={`nav-item ${this.state.selectedFeed ? 'selected' : ''}`}>
+                        <div className={`nav-item ${this.props.menuSelections.selectedFeed ? 'selected' : ''}`}>
                             <Link to="/feed" onClick={e => this.selectNavItem('selectedFeed')}>Feed</Link>
                         </div>
-                        <div className={`nav-item ${this.state.selectedServices ? 'selected' : ''}`}>
+                        <div className={`nav-item ${this.props.menuSelections.selectedServices ? 'selected' : ''}`}>
                             <Link to={`/servicos-${this.state.userType}`} onClick={e => this.selectNavItem('selectedServices')}>Serviços</Link>
                         </div>
-                        <div className={`nav-item ${this.state.selectedHowItWorks ? 'selected' : ''}`}>
+                        <div className={`nav-item ${this.props.menuSelections.selectedHowItWorks ? 'selected' : ''}`}>
                             <Link to="/como-funciona" onClick={e => this.selectNavItem('selectedHowItWorks')}>Como funciona</Link>
                         </div>
-                        <div className={`nav-item ${this.state.selectedProfile ? 'selected' : ''}`}>
+                        <div className={`nav-item ${this.props.menuSelections.selectedProfile ? 'selected' : ''}`}>
                             <Link to="/perfil-proprio" onClick={e => this.selectNavItem('selectedProfile')}>Perfil</Link>
                         </div>
                     </div>
@@ -69,8 +71,18 @@ class Nav extends Component {
 function mapStateToProps(state) {
     return {
         navVisibility: state.nav.navVisibility,
-        user: state.user.user
+        user: state.user.user,
+        menuSelections: state.menuSelections.menuSelections
     }
 }
 
-export default connect(mapStateToProps)(Nav)
+function mapPropsToState(dispatch) {
+    return {
+        changeMenuSelections(menuSelections) {
+            const action = setMenuSelections(menuSelections)
+            dispatch(action)
+        }
+    }
+}
+
+export default connect(mapStateToProps, mapPropsToState)(Nav)

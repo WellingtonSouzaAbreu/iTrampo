@@ -2,6 +2,9 @@ import React, { Component } from 'react'
 import axios from 'axios'
 import { Button, Collapse } from 'react-bootstrap'
 import Modal from 'react-bootstrap/Modal'
+import { connect } from 'react-redux'
+import { setHeaderItemsVisibility } from './../../store/actions/headerItems.js'
+
 
 import baseApiUrl from './../../global.js'
 
@@ -63,6 +66,8 @@ class Cadastro extends Component {
         this.showUserTypeModal()
         this.loadCountries()
         this.loadSpecialities()
+        
+        this.props.changeHeaderItemsVisibility(false)// Esconde userDropdown e o botão de cadastro
     }
 
     selectUserTypeModal() {
@@ -117,15 +122,15 @@ class Cadastro extends Component {
     }
 
     hideUserTypeModal() {
-        if(this.state.user.userType !== ''){
+        if (this.state.user.userType !== '') {
             this.setState({ modalVisibility: false })
-        }else{
+        } else {
             window.alert('Por favor, selecione uma opção para continuar.')
         }
     }
 
     updateFieldUserType(userType) {
-        if(userType === this.state.user.userType || this.state.user.userType === '') this.toggleCollapseState() // Se der true é porque foi clicado no mesmo botão. Se for diferente só encolhe o collapse
+        if (userType === this.state.user.userType || this.state.user.userType === '') this.toggleCollapseState() // Se der true é porque foi clicado no mesmo botão. Se for diferente só encolhe o collapse
 
         let user = { ...this.state.user }
         user.userType = userType
@@ -504,4 +509,14 @@ class Cadastro extends Component {
     }
 }
 
-export default Cadastro
+
+function mapPropsToState(dispatch) {
+    return {
+        changeHeaderItemsVisibility(visibility) {
+            const action = setHeaderItemsVisibility(visibility)
+            dispatch(action)
+        }
+    }
+}
+
+export default connect(null, mapPropsToState)(Cadastro)

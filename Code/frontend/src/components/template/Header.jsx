@@ -1,5 +1,5 @@
 import React from 'react'
-import {connect} from 'react-redux'
+import { connect } from 'react-redux'
 
 import './Header.css'
 
@@ -21,9 +21,12 @@ function Header(props) {
             </div>
             <div className="bt-cadastro">
                 {
-                    props.dropdownVisibility === true || window.location.pathname !== '/login'
-                        ? <UserDropdown />
-                        : <BtnGrayWithRadius click={register} label="Cadastre-se" />
+                    props.headerItemsIsVisible
+                        ? props.userDropdownVisibility
+                            ? <UserDropdown />
+                            : <BtnGrayWithRadius click={register} label="Cadastre-se" />
+
+                        : <span style={{color: 'white'}}>Conclua seu cadastro e tenha acesso total à nossa plataforma!</span>
                 }
             </div>
         </header>
@@ -32,7 +35,9 @@ function Header(props) {
 
 function mapStateToProps(state) {
     return {
-        dropdownVisibility: state.dropdown.dropdownVisibility
+        userData: state.userData,
+        userDropdownVisibility: state.userDropdown.dropdownVisibility,
+        headerItemsIsVisible: state.headerItems.visibility
     }
 }
 

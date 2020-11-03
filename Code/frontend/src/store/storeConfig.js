@@ -1,17 +1,22 @@
 import { createStore, combineReducers } from 'redux'
+import storeSynchronize from 'redux-localstore'
 
 import navReducer from './reducers/navReducer.js'
 import userReducer from './reducers/userReducer.js'
-import dropdownReducer from './reducers/dropdownReducer.js'
+import userDropdownReducer from './reducers/userDropdownReducer.js'
+import headerItemsReducer from './reducers/headerItemsReducer.js'
+import menuSelectionsReducer from './reducers/menuSelectionsReducer.js'
 
 const reducers = combineReducers({
     nav: navReducer,
     user: userReducer,
-    dropdown: dropdownReducer
+    userDropdown: userDropdownReducer,
+    headerItems: headerItemsReducer,
+    menuSelections: menuSelectionsReducer
 })
 
-function storeConfig() {
-    return createStore(reducers)
-}
+const store = createStore(reducers)
 
-export default storeConfig
+storeSynchronize(store)
+
+export default store
